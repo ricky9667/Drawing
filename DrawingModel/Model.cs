@@ -1,0 +1,160 @@
+﻿using System.Collections.Generic;
+
+namespace DrawingModel
+{
+    public enum ShapeType
+    {
+        LINE,
+        RECTANGLE,
+        ELLIPSE
+    }
+
+    public class Model
+    {
+        public event ModelChangedEventHandler _modelChanged;
+        public delegate void ModelChangedEventHandler();
+
+        private double _firstPointX;
+        private double _firstPointY;
+        private bool _isPressed = false;
+        private ShapeType _currentShapeType = ShapeType.LINE;
+        private IShape _hint = new Line();
+        private readonly List<IShape> _shapes = new List<IShape>();
+
+        public double FirstPointX
+        {
+            get
+            {
+                return _firstPointX;
+            }
+        }
+
+        public double FirstPointY
+        {
+            get
+            {
+                return _firstPointY;
+            }
+        }
+
+        public bool IsPressed
+        {
+            get
+            {
+                return _isPressed;
+            }
+        }
+
+        public ShapeType CurrentShapeType
+        {
+            get
+            {
+                return _currentShapeType;
+            }
+        }
+
+        public IShape Hint
+        { 
+            get
+            {
+                return _hint;
+            }
+        }
+
+        public List<IShape> Shapes
+        {
+            get
+            {
+                return _shapes;
+            }
+        }
+
+        // set current drawing shape and hint shape
+        public void SetDrawingShape(ShapeType shapeType)
+        {
+            _currentShapeType = shapeType;
+            _hint = CreateShapeInstance(shapeType);
+        }
+
+        // record first point coordinates on pointer pressed
+        public void HandlePointerPressed(double posX, double posY)
+        {
+            if (posX > 0 && posY > 0)
+            {
+                _firstPointX = posX;
+                _firstPointY = posY;
+                _hint.X1 = _firstPointX;
+                _hint.Y1 = _firstPointY;
+                _isPressed = true;
+            }
+        }
+
+        // record second point coordinates on pointer moved
+        public void HandlePointerMoved(double posX, double posY)
+        {
+            if (_isPressed)
+            {
+                _hint.X2 = posX;
+                _hint.Y2 = posY;
+                NotifyModelChanged();
+            }
+        }
+
+        // add hint to saved shapes on pointer released
+        public void HandlePointerReleased(double posX, double posY)
+        {
+            if (_isPressed)
+            {
+                _isPressed = false;
+                IShape hint = CreateShapeInstance(_currentShapeType);
+                hint.X1 = _firstPointX;
+                hint.Y1 = _firstPointY;
+                hint.X2 = posX;
+                hint.Y2 = posY;
+                _shapes.Add(hint);
+                NotifyModelChanged();
+            }
+        }
+
+        // clear all saved shapes
+        public void Clear()
+        {
+            _isPressed = false;
+            _shapes.Clear();
+            NotifyModelChanged();
+        }
+
+        // draw shapes on canvas
+        public void Draw(IGraphics graphics)
+        {
+            graphics.ClearAll();
+            foreach (IShape shape in _shapes)
+                shape.Draw(graphics);
+            if (_isPressed)
+                _hint.Draw(graphics);
+        }
+
+        // notify observers
+        public void NotifyModelChanged()
+        {
+            if (_modelChanged != null)
+                _modelChanged();
+        }
+
+        // create shape instance by shape type
+        private IShape CreateShapeInstance(ShapeType shapeType)
+        {
+            switch (shapeType)
+            {
+                case ShapeType.LINE:
+                    return new Line();
+                case ShapeType.RECTANGLE:
+                    return new Rectangle();
+                case ShapeType.ELLIPSE:
+                    return new Ellipse();
+                default:
+                    return null;
+            }
+        }
+    }
+}
