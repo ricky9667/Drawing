@@ -2,13 +2,6 @@
 
 namespace DrawingModel
 {
-    public enum ShapeType
-    {
-        LINE,
-        RECTANGLE,
-        ELLIPSE
-    }
-
     public class Model
     {
         public event ModelChangedEventHandler _modelChanged;
@@ -73,7 +66,8 @@ namespace DrawingModel
         public void SetDrawingShape(ShapeType shapeType)
         {
             _currentShapeType = shapeType;
-            _hint = CreateShapeInstance(shapeType);
+            _hint = ShapeFactory.CreateShape(shapeType);
+            //_hint = CreateShapeInstance(shapeType);
         }
 
         // record first point coordinates on pointer pressed
@@ -106,7 +100,8 @@ namespace DrawingModel
             if (_isPressed)
             {
                 _isPressed = false;
-                IShape hint = CreateShapeInstance(_currentShapeType);
+                IShape hint = ShapeFactory.CreateShape(_currentShapeType);
+                //IShape hint = CreateShapeInstance(_currentShapeType);
                 hint.X1 = _firstPointX;
                 hint.Y1 = _firstPointY;
                 hint.X2 = posX;
@@ -139,22 +134,6 @@ namespace DrawingModel
         {
             if (_modelChanged != null)
                 _modelChanged();
-        }
-
-        // create shape instance by shape type
-        private IShape CreateShapeInstance(ShapeType shapeType)
-        {
-            switch (shapeType)
-            {
-                case ShapeType.LINE:
-                    return new Line();
-                case ShapeType.RECTANGLE:
-                    return new Rectangle();
-                case ShapeType.ELLIPSE:
-                    return new Ellipse();
-                default:
-                    return null;
-            }
         }
     }
 }

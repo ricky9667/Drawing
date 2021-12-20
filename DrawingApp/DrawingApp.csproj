@@ -134,6 +134,9 @@
     <Compile Include="..\DrawingModel\Rectangle.cs">
       <Link>Model\Rectangle.cs</Link>
     </Compile>
+    <Compile Include="..\DrawingModel\ShapeFactory.cs">
+      <Link>Model\ShapeFactory.cs</Link>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
