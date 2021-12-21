@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClearCommand.cs" />
     <Compile Include="CommandManager.cs" />
     <Compile Include="DrawCommand.cs" />
     <Compile Include="Ellipse.cs" />

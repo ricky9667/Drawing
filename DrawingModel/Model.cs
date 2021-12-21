@@ -10,7 +10,7 @@ namespace DrawingModel
         private double _firstPointX;
         private double _firstPointY;
         private bool _isPressed = false;
-        private ShapeType _currentShapeType = ShapeType.LINE;
+        private ShapeType _currentShapeType = ShapeType.RECTANGLE;
         private IShape _hint = new Line();
         private readonly List<IShape> _shapes = new List<IShape>();
         private readonly CommandManager _commandManager = new CommandManager();
@@ -130,7 +130,7 @@ namespace DrawingModel
         public void Clear()
         {
             _isPressed = false;
-            _shapes.Clear();
+            _commandManager.RunCommand(new ClearCommand(this));
             NotifyModelChanged();
         }
 
