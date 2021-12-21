@@ -1,9 +1,9 @@
 ﻿namespace DrawingModel
 {
-    class DrawCommand : ICommand
+    public class DrawCommand : ICommand
     {
-        Model _model;
-        IShape _shape;
+        private readonly Model _model;
+        private readonly IShape _shape;
         public DrawCommand(Model model, IShape shape)
         {
             _model = model;

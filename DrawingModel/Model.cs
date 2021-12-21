@@ -11,7 +11,7 @@ namespace DrawingModel
         private double _firstPointY;
         private bool _isPressed = false;
         private ShapeType _currentShapeType = ShapeType.RECTANGLE;
-        private IShape _hint = new Line();
+        private IShape _hint = new Rectangle();
         private readonly List<IShape> _shapes = new List<IShape>();
         private readonly CommandManager _commandManager = new CommandManager();
 

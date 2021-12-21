@@ -1,10 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DrawingModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DrawingModel.Tests
 {
@@ -22,7 +16,7 @@ namespace DrawingModel.Tests
         [TestMethod()]
         public void SetDrawingShapeTest()
         {
-            Assert.AreEqual(ShapeType.LINE, model.CurrentShapeType);
+            Assert.AreEqual(ShapeType.RECTANGLE, model.CurrentShapeType);
             model.SetDrawingShape(ShapeType.ELLIPSE);
             Assert.AreEqual(ShapeType.ELLIPSE, model.CurrentShapeType);
         }

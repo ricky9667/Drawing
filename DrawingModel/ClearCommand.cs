@@ -2,10 +2,10 @@
 
 namespace DrawingModel
 {
-    class ClearCommand : ICommand
+    public class ClearCommand : ICommand
     {
-        Model _model;
-        List<IShape> _shapes = new List<IShape>();
+        private readonly Model _model;
+        private readonly List<IShape> _shapes = new List<IShape>();
         public ClearCommand(Model model)
         {
             _model = model;

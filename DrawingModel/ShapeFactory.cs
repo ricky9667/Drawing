@@ -13,7 +13,7 @@ namespace DrawingModel
         ELLIPSE
     }
 
-    class ShapeFactory
+    public class ShapeFactory
     {
         // use factory pattern to create shape instance
         public static IShape CreateShape(ShapeType shapeType)

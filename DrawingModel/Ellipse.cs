@@ -1,64 +1,19 @@
 ﻿namespace DrawingModel
 {
-    class Ellipse : IShape
+    public class Ellipse : IShape
     {
-        private double _x1;
-        private double _x2;
-        private double _y1;
-        private double _y2;
+        public double X1 { get; set; }
 
-        public double X1
-        {
-            get
-            {
-                return _x1;
-            }
-            set
-            {
-                _x1 = value;
-            }
-        }
+        public double Y1 { get; set; }
 
-        public double Y1
-        {
-            get
-            {
-                return _y1;
-            }
-            set
-            {
-                _y1 = value;
-            }
-        }
+        public double X2 { get; set; }
 
-        public double X2
-        {
-            get
-            {
-                return _x2;
-            }
-            set
-            {
-                _x2 = value;
-            }
-        }
-
-        public double Y2
-        {
-            get
-            {
-                return _y2;
-            }
-            set
-            {
-                _y2 = value;
-            }
-        }
+        public double Y2 { get; set; }
 
         // draw ellipse on canvas
         public void Draw(IGraphics graphics)
         {
-            graphics.DrawEllipse(_x1, _y1, _x2, _y2);
+            graphics.DrawEllipse(X1, Y1, X2, Y2);
         }
     }
 }
