@@ -9,11 +9,12 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Width="1366" Height="786">
 
     <Grid Width="1366" Height="786">
-        <Canvas x:Name="_canvas" Margin="0,90,0,0" Background="White" Height="680"/>
-        <Button x:Name="_clearButton" Content="Clear" Margin="1000,50,0,0" VerticalAlignment="Top" Width="120" HorizontalAlignment="Center"/>
-        <Button x:Name="_lineButton" Content="Line" Margin="0,50,1000,0" VerticalAlignment="Top" Width="120" HorizontalAlignment="Center"/>
-        <Button x:Name="_rectangleButton" Content="Rectangle" Margin="0,50,350,0" VerticalAlignment="Top" Width="120" HorizontalAlignment="Center"/>
-        <Button x:Name="_ellipseButton" Content="Ellipse" Margin="350,50,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Width="120"/>
-
+        <Canvas x:Name="_canvas" Margin="0,120,0,0" Background="White" Height="680"/>
+        <Button x:Name="_clearButton" Content="Clear" Margin="1000,80,0,0" VerticalAlignment="Top" Width="120" HorizontalAlignment="Center"/>
+        <Button x:Name="_lineButton" Content="Line" Margin="0,80,1000,0" VerticalAlignment="Top" Width="120" HorizontalAlignment="Center"/>
+        <Button x:Name="_rectangleButton" Content="Rectangle" Margin="0,80,350,0" VerticalAlignment="Top" Width="120" HorizontalAlignment="Center"/>
+        <Button x:Name="_ellipseButton" Content="Ellipse" Margin="350,80,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Width="120"/>
+        <Button x:Name="_undoButton" Content="Undo" Margin="20,40,0,0" VerticalAlignment="Top" Width="60"/>
+        <Button x:Name="_redoButton" Content="Redo" Margin="80,40,0,0" VerticalAlignment="Top" Width="60"/>
     </Grid>
 </Page>

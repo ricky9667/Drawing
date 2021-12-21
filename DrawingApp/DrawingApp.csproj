@@ -116,8 +116,17 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\DrawingModel\CommandManager.cs">
+      <Link>Model\CommandManager.cs</Link>
+    </Compile>
+    <Compile Include="..\DrawingModel\DrawCommand.cs">
+      <Link>Model\DrawCommand.cs</Link>
+    </Compile>
     <Compile Include="..\DrawingModel\Ellipse.cs">
       <Link>Model\Ellipse.cs</Link>
+    </Compile>
+    <Compile Include="..\DrawingModel\ICommand.cs">
+      <Link>Model\ICommand.cs</Link>
     </Compile>
     <Compile Include="..\DrawingModel\IGraphics.cs">
       <Link>Model\IGraphics.cs</Link>
@@ -140,7 +149,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PresentationModel.cs" />
+    <Compile Include="View\PresentationModel.cs" />
     <Compile Include="View\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

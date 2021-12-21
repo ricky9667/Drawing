@@ -13,6 +13,7 @@ namespace DrawingModel
         private ShapeType _currentShapeType = ShapeType.LINE;
         private IShape _hint = new Line();
         private readonly List<IShape> _shapes = new List<IShape>();
+        private readonly CommandManager _commandManager = new CommandManager();
 
         public double FirstPointX
         {
@@ -62,12 +63,27 @@ namespace DrawingModel
             }
         }
 
+        public bool CanUndo
+        {
+            get
+            {
+                return _commandManager.CanUndo;
+            }
+        }
+
+        public bool CanRedo
+        {
+            get
+            {
+                return _commandManager.CanRedo;
+            }
+        }
+
         // set current drawing shape and hint shape
         public void SetDrawingShape(ShapeType shapeType)
         {
             _currentShapeType = shapeType;
             _hint = ShapeFactory.CreateShape(shapeType);
-            //_hint = CreateShapeInstance(shapeType);
         }
 
         // record first point coordinates on pointer pressed
@@ -101,12 +117,11 @@ namespace DrawingModel
             {
                 _isPressed = false;
                 IShape hint = ShapeFactory.CreateShape(_currentShapeType);
-                //IShape hint = CreateShapeInstance(_currentShapeType);
                 hint.X1 = _firstPointX;
                 hint.Y1 = _firstPointY;
                 hint.X2 = posX;
                 hint.Y2 = posY;
-                _shapes.Add(hint);
+                _commandManager.RunCommand(new DrawCommand(this, hint));
                 NotifyModelChanged();
             }
         }
@@ -117,6 +132,30 @@ namespace DrawingModel
             _isPressed = false;
             _shapes.Clear();
             NotifyModelChanged();
+        }
+
+        // add shape
+        public void AddShape(IShape shape)
+        {
+            _shapes.Add(shape);
+        }
+
+        // remove shape
+        public void RemoveShape()
+        {
+            _shapes.RemoveAt(_shapes.Count - 1);
+        }
+
+        // undo command
+        public void UndoCommand()
+        {
+            _commandManager.Undo();
+        }
+
+        // redo command
+        public void RedoCommand()
+        {
+            _commandManager.Redo();
         }
 
         // draw shapes on canvas

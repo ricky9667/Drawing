@@ -8,6 +8,8 @@ namespace DrawingForm
     {
         private readonly Model _model;
         private readonly PresentationModel.PresentationModel _presentationModel;
+        ToolStripButton _undoToolStripButton = new ToolStripButton("Undo", null);
+        ToolStripButton _redoToolStripButton = new ToolStripButton("Redo", null);
         public Form1()
         {
             _model = new Model();
@@ -16,11 +18,19 @@ namespace DrawingForm
 
             InitializeComponent();
             InitializeEvents();
+            
+            _actionsToolStrip.Items.Add(_undoToolStripButton);
+            _actionsToolStrip.Items.Add(_redoToolStripButton);
+            _undoToolStripButton.Enabled = _model.CanUndo;
+            _redoToolStripButton.Enabled = _model.CanRedo;
         }
 
         // add event to controls
         private void InitializeEvents()
         {
+            _undoToolStripButton.Click += HandleUndoButtonClick;
+            _redoToolStripButton.Click += HandleRedoButtonClick;
+
             _canvas.MouseDown += HandleCanvasPressed;
             _canvas.MouseUp += HandleCanvasReleased;
             _canvas.MouseMove += HandleCanvasMoved;
@@ -30,6 +40,20 @@ namespace DrawingForm
             _rectangleButton.Click += HandleRectangleButtonClick;
             _ellipseButton.Click += HandleEllipseButtonClick;
             _clearButton.Click += HandleClearButtonClick;
+        }
+
+        // undo last command
+        private void HandleUndoButtonClick(object sender, EventArgs e)
+        {
+            _model.UndoCommand();
+            HandleModelChanged();
+        }
+
+        // redo last command
+        private void HandleRedoButtonClick(object sender, EventArgs e)
+        {
+            _model.RedoCommand();
+            HandleModelChanged();
         }
 
         // switch to draw line mode
@@ -42,7 +66,7 @@ namespace DrawingForm
         }
 
         // switch to draw rectangle mode
-        public void HandleRectangleButtonClick(object sender, EventArgs e)
+        private void HandleRectangleButtonClick(object sender, EventArgs e)
         {
             _model.SetDrawingShape(ShapeType.RECTANGLE);
             _lineButton.Enabled = true;
@@ -51,7 +75,7 @@ namespace DrawingForm
         }
 
         // switch to draw ellipse mode
-        public void HandleEllipseButtonClick(object sender, EventArgs e)
+        private void HandleEllipseButtonClick(object sender, EventArgs e)
         {
             _model.SetDrawingShape(ShapeType.ELLIPSE);
             _lineButton.Enabled = true;
@@ -60,7 +84,7 @@ namespace DrawingForm
         }
 
         // clear drawings on canvas
-        public void HandleClearButtonClick(object sender, EventArgs e)
+        private void HandleClearButtonClick(object sender, EventArgs e)
         {
             _model.Clear();
             _lineButton.Enabled = true;
@@ -69,19 +93,19 @@ namespace DrawingForm
         }
 
         // event when canvas is pressed
-        public void HandleCanvasPressed(object sender, MouseEventArgs e)
+        private void HandleCanvasPressed(object sender, MouseEventArgs e)
         {
             _model.HandlePointerPressed(e.X, e.Y);
         }
 
         // event when mouse is moving
-        public void HandleCanvasMoved(object sender, MouseEventArgs e)
+        private void HandleCanvasMoved(object sender, MouseEventArgs e)
         {
             _model.HandlePointerMoved(e.X, e.Y);
         }
 
         // event when canvas press on canvas is release
-        public void HandleCanvasReleased(object sender, MouseEventArgs e)
+        private void HandleCanvasReleased(object sender, MouseEventArgs e)
         {
             if (_model.IsPressed)
             {
@@ -90,18 +114,20 @@ namespace DrawingForm
                 _ellipseButton.Enabled = true;
             }
             _model.HandlePointerReleased(e.X, e.Y);
-            
+            HandleModelChanged();
         }
 
         // paint drawings on canvas
-        public void HandleCanvasPaint(object sender, PaintEventArgs e)
+        private void HandleCanvasPaint(object sender, PaintEventArgs e)
         {
             _presentationModel.Draw(e.Graphics);
         }
 
         // model change
-        public void HandleModelChanged()
+        private void HandleModelChanged()
         {
+            _undoToolStripButton.Enabled = _model.CanUndo;
+            _redoToolStripButton.Enabled = _model.CanRedo;
             Invalidate(true);
         }
     }
