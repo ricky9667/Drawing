@@ -2,13 +2,33 @@
 {
     public class Rectangle : IShape
     {
-        public double X1 { get; set; }
+        public ShapeType ShapeType
+        {
+            get
+            {
+                return ShapeType.RECTANGLE;
+            }
+        }
 
-        public double Y1 { get; set; }
+        public double X1
+        {
+            get; set;
+        }
 
-        public double X2 { get; set; }
+        public double Y1
+        {
+            get; set;
+        }
 
-        public double Y2 { get; set; }
+        public double X2
+        {
+            get; set;
+        }
+
+        public double Y2
+        {
+            get; set;
+        }
 
         // draw rectangle on canvas
         public void Draw(IGraphics graphics)

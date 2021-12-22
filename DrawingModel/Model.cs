@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DrawingModel
 {
@@ -9,6 +10,7 @@ namespace DrawingModel
 
         private double _firstPointX;
         private double _firstPointY;
+        private int _firstClickedShapeIndex;
         private bool _isPressed = false;
         private ShapeType _currentShapeType = ShapeType.RECTANGLE;
         private IShape _hint = new Rectangle();
@@ -86,16 +88,36 @@ namespace DrawingModel
             _hint = ShapeFactory.CreateShape(shapeType);
         }
 
+        // get shape index if coordinates is in a particular shape
+        private int GetClickedShapeIndex(double posX, double posY)
+        {
+            for (int index = _shapes.Count - 1; index >= 0; index--)
+            {
+                IShape shape = _shapes[index];
+                if (shape.ShapeType == ShapeType.LINE)
+                {
+                    continue;
+                }
+                if (shape.X1 <= posX && posX <= shape.X2 && shape.Y1 <= posY && posY <= shape.Y2)
+                {
+                    return index;
+                }
+            }
+            return -1;
+        }
+
         // record first point coordinates on pointer pressed
         public void HandlePointerPressed(double posX, double posY)
         {
             if (posX > 0 && posY > 0)
             {
-                _firstPointX = posX;
-                _firstPointY = posY;
-                _hint.X1 = _firstPointX;
-                _hint.Y1 = _firstPointY;
-                _isPressed = true;
+                _firstClickedShapeIndex = GetClickedShapeIndex(posX, posY);
+                if (_currentShapeType != ShapeType.LINE || _firstClickedShapeIndex > -1)
+                {
+                    _hint.X1 = _firstPointX = posX;
+                    _hint.Y1 = _firstPointY = posY;
+                    _isPressed = true;
+                }
             }
         }
 
@@ -116,12 +138,29 @@ namespace DrawingModel
             if (_isPressed)
             {
                 _isPressed = false;
-                IShape hint = ShapeFactory.CreateShape(_currentShapeType);
-                hint.X1 = _firstPointX;
-                hint.Y1 = _firstPointY;
-                hint.X2 = posX;
-                hint.Y2 = posY;
-                _commandManager.RunCommand(new DrawCommand(this, hint));
+                if (_currentShapeType == ShapeType.LINE)
+                {
+                    int secondShapeIndex = GetClickedShapeIndex(posX, posY);
+                    if (secondShapeIndex == -1)
+                    {
+                        return;
+                    }
+
+                    Line hint = new Line();
+                    hint.FirstShape = _shapes[_firstClickedShapeIndex];
+                    hint.SecondShape = _shapes[secondShapeIndex];
+                    hint.LocatePositionByShapes();
+                    _commandManager.RunCommand(new DrawCommand(this, hint));
+                }
+                else
+                {
+                    IShape hint = ShapeFactory.CreateShape(_currentShapeType);
+                    hint.X1 = _firstPointX;
+                    hint.Y1 = _firstPointY;
+                    hint.X2 = posX;
+                    hint.Y2 = posY;
+                    _commandManager.RunCommand(new DrawCommand(this, hint));
+                }
                 NotifyModelChanged();
             }
         }
@@ -162,8 +201,15 @@ namespace DrawingModel
         public void Draw(IGraphics graphics)
         {
             graphics.ClearAll();
+            
             foreach (IShape shape in _shapes)
-                shape.Draw(graphics);
+                if (shape.ShapeType == ShapeType.LINE)
+                    shape.Draw(graphics);
+
+            foreach (IShape shape in _shapes)
+                if (shape.ShapeType != ShapeType.LINE)
+                    shape.Draw(graphics);
+            
             if (_isPressed)
                 _hint.Draw(graphics);
         }
