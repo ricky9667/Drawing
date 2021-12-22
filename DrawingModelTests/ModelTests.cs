@@ -7,12 +7,14 @@ namespace DrawingModel.Tests
     {
         private Model model;
 
+        // init
         [TestInitialize]
         public void Initialize()
         {
             model = new Model();
         }
 
+        // test
         [TestMethod()]
         public void SetDrawingShapeTest()
         {
@@ -21,6 +23,7 @@ namespace DrawingModel.Tests
             Assert.AreEqual(ShapeType.ELLIPSE, model.CurrentShapeType);
         }
 
+        // test
         [TestMethod()]
         public void HandlePointerPressedTest()
         {
@@ -43,6 +46,7 @@ namespace DrawingModel.Tests
             Assert.IsTrue(model.IsPressed);
         }
 
+        // test
         [TestMethod()]
         public void HandlePointerMovedTest()
         {
@@ -61,6 +65,7 @@ namespace DrawingModel.Tests
             Assert.IsTrue(model.IsPressed);
         }
 
+        // test
         [TestMethod()]
         public void HandlePointerReleasedTest()
         {
@@ -86,6 +91,7 @@ namespace DrawingModel.Tests
             Assert.AreEqual(testY2, model.Shapes[0].Y2);
         }
 
+        // test
         [TestMethod()]
         public void ClearTest()
         {
@@ -103,6 +109,7 @@ namespace DrawingModel.Tests
             Assert.AreEqual(0, model.Shapes.Count);
         }
 
+        // test
         [TestMethod()]
         public void NotifyModelChangedTest()
         {

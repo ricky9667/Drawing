@@ -1,4 +1,6 @@
-﻿namespace DrawingModel
+﻿using System;
+
+namespace DrawingModel
 {
     public class Line : IShape
     {
@@ -30,6 +32,22 @@
             get; set;
         }
 
+        public double CenterX
+        {
+            get
+            {
+                return (X1 + X2) / 2;
+            }
+        }
+
+        public double CenterY
+        {
+            get
+            {
+                return (Y1 + Y2) / 2;
+            }
+        }
+
         public IShape FirstShape
         {
             get; set;
@@ -49,10 +67,16 @@
         // change line coordinate from shapes
         public void LocatePositionByShapes()
         {
-            X1 = (FirstShape.X1 + FirstShape.X2) / 2;
-            Y1 = (FirstShape.Y1 + FirstShape.Y2) / 2;
-            X2 = (SecondShape.X1 + SecondShape.X2) / 2;
-            Y2 = (SecondShape.Y1 + SecondShape.Y2) / 2;
+            X1 = FirstShape.CenterX;
+            Y1 = FirstShape.CenterY;
+            X2 = SecondShape.CenterX;
+            Y2 = SecondShape.CenterY;
+        }
+
+        // check position in shape
+        public bool IsPositionInShape(double posX, double posY)
+        {
+            return false;
         }
     }
 }

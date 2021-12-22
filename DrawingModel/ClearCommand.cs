@@ -22,7 +22,7 @@ namespace DrawingModel
         }
 
         // undo clear shapes
-        public void Unexecute()
+        public void UndoExecute()
         {
             foreach (IShape shape in _shapes)
             {

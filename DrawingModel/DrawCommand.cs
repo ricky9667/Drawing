@@ -17,7 +17,7 @@
         }
 
         // unexecute draw command
-        public void Unexecute()
+        public void UndoExecute()
         {
             _model.RemoveShape();
         }

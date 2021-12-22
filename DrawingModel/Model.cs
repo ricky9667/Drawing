@@ -14,6 +14,7 @@ namespace DrawingModel
         private bool _isPressed = false;
         private ShapeType _currentShapeType = ShapeType.RECTANGLE;
         private IShape _hint = new Rectangle();
+        private IShape _selectedShape = null;
         private readonly List<IShape> _shapes = new List<IShape>();
         private readonly CommandManager _commandManager = new CommandManager();
 
@@ -94,11 +95,11 @@ namespace DrawingModel
             for (int index = _shapes.Count - 1; index >= 0; index--)
             {
                 IShape shape = _shapes[index];
-                if (shape.ShapeType == ShapeType.LINE)
-                {
-                    continue;
-                }
-                if (shape.X1 <= posX && posX <= shape.X2 && shape.Y1 <= posY && posY <= shape.Y2)
+                //if (shape.ShapeType == ShapeType.LINE)
+                //{
+                //    continue;
+                //}
+                if (shape.IsPositionInShape(posX, posY))
                 {
                     return index;
                 }
@@ -138,31 +139,46 @@ namespace DrawingModel
             if (_isPressed)
             {
                 _isPressed = false;
-                if (_currentShapeType == ShapeType.LINE)
+                if (_firstPointX == posX && _firstPointY == posY)
                 {
-                    int secondShapeIndex = GetClickedShapeIndex(posX, posY);
-                    if (secondShapeIndex == -1)
-                    {
-                        return;
-                    }
+                    _selectedShape = new Rectangle();
+                    return;
+                }
 
-                    Line hint = new Line();
-                    hint.FirstShape = _shapes[_firstClickedShapeIndex];
-                    hint.SecondShape = _shapes[secondShapeIndex];
-                    hint.LocatePositionByShapes();
-                    _commandManager.RunCommand(new DrawCommand(this, hint));
-                }
+                if (_currentShapeType == ShapeType.LINE)
+                    AddNewLine(posX, posY);
                 else
-                {
-                    IShape hint = ShapeFactory.CreateShape(_currentShapeType);
-                    hint.X1 = _firstPointX;
-                    hint.Y1 = _firstPointY;
-                    hint.X2 = posX;
-                    hint.Y2 = posY;
-                    _commandManager.RunCommand(new DrawCommand(this, hint));
-                }
+                    AddNewShape(posX, posY);
+
                 NotifyModelChanged();
             }
+        }
+
+        // add new line to shapes list
+        private void AddNewLine(double posX, double posY)
+        {
+            int secondShapeIndex = GetClickedShapeIndex(posX, posY);
+            if (secondShapeIndex == -1)
+            {
+                return;
+            }
+
+            Line hint = new Line();
+            hint.FirstShape = _shapes[_firstClickedShapeIndex];
+            hint.SecondShape = _shapes[secondShapeIndex];
+            hint.LocatePositionByShapes();
+            _commandManager.RunCommand(new DrawCommand(this, hint));
+        }
+
+        // add new rectangle or ellipse to shapes list
+        private void AddNewShape(double posX, double posY)
+        {
+            IShape hint = ShapeFactory.CreateShape(_currentShapeType);
+            hint.X1 = _firstPointX;
+            hint.Y1 = _firstPointY;
+            hint.X2 = posX;
+            hint.Y2 = posY;
+            _commandManager.RunCommand(new DrawCommand(this, hint));
         }
 
         // clear all saved shapes

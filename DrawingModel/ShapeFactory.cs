@@ -23,7 +23,8 @@ namespace DrawingModel
                 case ShapeType.ELLIPSE:
                     return new Ellipse();
                 default:
-                    throw new Exception("ShapeType is null or does not exist.");
+                    const string MESSAGE = "ShapeType is null or does not exist.";
+                    throw new Exception(MESSAGE);
             }
         }
     }

@@ -33,6 +33,7 @@ namespace DrawingForm.Tests
             _robot.CleanUp();
         }
 
+        // test
         [TestMethod()]
         public void DrawLine()
         {
@@ -40,6 +41,7 @@ namespace DrawingForm.Tests
             _robot.DragAndDrop(-200, -150, 100, 200);
         }
 
+        // test
         [TestMethod()]
         public void DrawSquare()
         {
@@ -47,6 +49,7 @@ namespace DrawingForm.Tests
             _robot.DragAndDrop(-100, -100, 100, 100);
         }
 
+        // test
         [TestMethod()]
         public void DrawEllipse()
         {
@@ -54,6 +57,7 @@ namespace DrawingForm.Tests
             _robot.DragAndDrop(-300, -200, 200, 300);
         }
 
+        // test
         [TestMethod()]
         public void DrawSnowman()
         {

@@ -6,6 +6,6 @@
         void Execute();
 
         // undo command
-        void Unexecute();
+        void UndoExecute();
     }
 }

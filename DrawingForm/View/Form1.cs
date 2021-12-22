@@ -8,8 +8,8 @@ namespace DrawingForm
     {
         private readonly Model _model;
         private readonly PresentationModel.PresentationModel _presentationModel;
-        ToolStripButton _undoToolStripButton = new ToolStripButton("Undo", null);
-        ToolStripButton _redoToolStripButton = new ToolStripButton("Redo", null);
+        readonly ToolStripButton _undoToolStripButton = new ToolStripButton("Undo", null);
+        readonly ToolStripButton _redoToolStripButton = new ToolStripButton("Redo", null);
         public Form1()
         {
             _model = new Model();

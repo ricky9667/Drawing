@@ -27,7 +27,20 @@
             get; set;
         }
 
+        double CenterX
+        {
+            get;
+        }
+
+        double CenterY
+        {
+            get;
+        }
+
         // draw shape on canvas
         void Draw(IGraphics graphics);
+
+        // check position in shape
+        bool IsPositionInShape(double posX, double posY);
     }
 }

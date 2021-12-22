@@ -21,11 +21,12 @@ namespace DrawingModel
         {
             if (_undoCommands.Count <= 0)
             {
-                throw new Exception("No commands in stack to undo");
+                const string MESSAGE = "No commands in stack";
+                throw new Exception(MESSAGE);
             }
 
             ICommand command = _undoCommands.Pop();
-            command.Unexecute();
+            command.UndoExecute();
             _redoCommands.Push(command);
         }
 
@@ -34,7 +35,8 @@ namespace DrawingModel
         {
             if (_redoCommands.Count <= 0)
             {
-                throw new Exception("No commands in stack to redo");
+                const string MESSAGE = "No commands in stack to redo";
+                throw new Exception(MESSAGE);
             }
             
             ICommand command = _redoCommands.Pop();
