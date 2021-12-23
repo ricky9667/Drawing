@@ -27,6 +27,11 @@
             get; set;
         }
 
+        string ShapeInfo
+        {
+            get;
+        }
+
         double CenterX
         {
             get;
@@ -35,11 +40,6 @@
         double CenterY
         {
             get;
-        }
-
-        bool IsSelected
-        {
-            get; set;
         }
 
         // draw shape on canvas

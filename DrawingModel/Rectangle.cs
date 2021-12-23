@@ -1,4 +1,6 @@
-﻿namespace DrawingModel
+﻿using System;
+
+namespace DrawingModel
 {
     public class Rectangle : IShape
     {
@@ -38,17 +40,23 @@
             }
         }
 
+        public string ShapeInfo
+        {
+            get
+            {
+                const string START = "Rectangle (";
+                const string SEPARATOR = ", ";
+                const string END = ")";
+                return START + Math.Round(X1) + SEPARATOR + Math.Round(Y1) + SEPARATOR + Math.Round(X2) + SEPARATOR + Math.Round(Y2) + END;
+            }
+        }
+
         public double CenterY
         {
             get
             {
                 return (Y1 + Y2) / 2;
             }
-        }
-
-        public bool IsSelected
-        {
-            get; set;
         }
 
         // draw rectangle on canvas

@@ -1,4 +1,6 @@
-﻿namespace DrawingModel
+﻿using System;
+
+namespace DrawingModel
 {
     public class Ellipse : IShape
     {
@@ -30,6 +32,17 @@
             get; set;
         }
 
+        public string ShapeInfo
+        {
+            get
+            {
+                const string START = "Ellipse (";
+                const string SEPARATOR = ", ";
+                const string END = ")";
+                return START + Math.Round(X1) + SEPARATOR + Math.Round(Y1) + SEPARATOR + Math.Round(X2) + SEPARATOR + Math.Round(Y2) + END;
+            }
+        }
+
         public double CenterX
         {
             get
@@ -44,11 +57,6 @@
             {
                 return (Y1 + Y2) / 2;
             }
-        }
-
-        public bool IsSelected
-        {
-            get; set;
         }
 
         // draw ellipse on canvas

@@ -31,6 +31,7 @@ namespace DrawingApp
             _model._modelChanged += HandleModelChanged;
             _undoButton.IsEnabled = _model.CanUndo;
             _redoButton.IsEnabled = _model.CanRedo;
+            _selectionTextBlock.Text = "";
         }
 
         // setup component events
@@ -129,6 +130,7 @@ namespace DrawingApp
         {
             _undoButton.IsEnabled = _model.CanUndo;
             _redoButton.IsEnabled = _model.CanRedo;
+            _selectionTextBlock.Text = _presentationModel.SelectedShapeInfo;
             _presentationModel.Draw();
         }
     }

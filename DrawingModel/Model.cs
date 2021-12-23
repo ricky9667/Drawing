@@ -82,6 +82,15 @@ namespace DrawingModel
             }
         }
 
+        public string SelectedShapeInfo
+        {
+            get
+            {
+                const string SELECTED = "Selected : ";
+                return (_selectedShapeIndex == -1) ? "" : SELECTED + _shapes[_selectedShapeIndex].ShapeInfo;
+            }
+        }
+
         // set current drawing shape and hint shape
         public void SetDrawingShape(ShapeType shapeType)
         {

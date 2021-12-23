@@ -31,6 +31,14 @@ namespace DrawingForm.PresentationModel
             }
         }
 
+        public string SelectedShapeInfo
+        {
+            get
+            {
+                return _model.SelectedShapeInfo;
+            }
+        }
+
         public bool LineButtonEnabled
         {
             get

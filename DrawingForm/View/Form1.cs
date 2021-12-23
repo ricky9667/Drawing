@@ -18,7 +18,8 @@ namespace DrawingForm
 
             InitializeComponent();
             InitializeEvents();
-            
+
+            _selectionLabel.Text = "";
             _actionsToolStrip.Items.Add(_undoToolStripButton);
             _actionsToolStrip.Items.Add(_redoToolStripButton);
             _undoToolStripButton.Enabled = _model.CanUndo;
@@ -128,6 +129,7 @@ namespace DrawingForm
         {
             _undoToolStripButton.Enabled = _model.CanUndo;
             _redoToolStripButton.Enabled = _model.CanRedo;
+            _selectionLabel.Text = _presentationModel.SelectedShapeInfo;
             Invalidate(true);
         }
     }
