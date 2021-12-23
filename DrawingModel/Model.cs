@@ -82,6 +82,14 @@ namespace DrawingModel
             }
         }
 
+        public int SelectedShapeIndex
+        {
+            get
+            {
+                return _selectedShapeIndex;
+            }
+        }
+
         public string SelectedShapeInfo
         {
             get

@@ -18,6 +18,8 @@ namespace DrawingModel.Tests
         [TestMethod()]
         public void SetDrawingShapeTest()
         {
+            Assert.AreEqual(ShapeType.NULL, model.CurrentShapeType);
+            model.SetDrawingShape(ShapeType.RECTANGLE);
             Assert.AreEqual(ShapeType.RECTANGLE, model.CurrentShapeType);
             model.SetDrawingShape(ShapeType.ELLIPSE);
             Assert.AreEqual(ShapeType.ELLIPSE, model.CurrentShapeType);
@@ -29,6 +31,7 @@ namespace DrawingModel.Tests
         {
             double testX = 17;
             double testY = 7;
+            model.SetDrawingShape(ShapeType.RECTANGLE);
             model.HandlePointerPressed(testX, testY);
             
             Assert.AreEqual(testX, model.FirstPointX);
@@ -57,6 +60,7 @@ namespace DrawingModel.Tests
 
             Assert.IsFalse(model.IsPressed);
 
+            model.SetDrawingShape(ShapeType.RECTANGLE);
             model.HandlePointerPressed(testX1, testY1);
             model.HandlePointerMoved(testX2, testY2);
             
@@ -76,6 +80,7 @@ namespace DrawingModel.Tests
 
             Assert.IsFalse(model.IsPressed);
 
+            model.SetDrawingShape(ShapeType.RECTANGLE);
             model.HandlePointerPressed(testX1, testY1);
             model.HandlePointerMoved(testX2, testY2);
             model.HandlePointerReleased(testX2, testY2);
@@ -93,20 +98,106 @@ namespace DrawingModel.Tests
 
         // test
         [TestMethod()]
+        public void SelectShapeTest()
+        {
+            DrawShapeFake(ShapeType.RECTANGLE, 10, 10, 100, 100);
+            model.HandlePointerPressed(50, 50);
+            model.HandlePointerReleased(50, 50);
+            Assert.AreEqual(0, model.SelectedShapeIndex);
+        }
+
+        // test
+        [TestMethod()]
         public void ClearTest()
         {
             Assert.IsFalse(model.IsPressed);
             Assert.AreEqual(0, model.Shapes.Count);
 
-            model.HandlePointerPressed(12, 49);
-            DrawShapeFake(ShapeType.LINE, 1, 2, 3, 4);
             DrawShapeFake(ShapeType.RECTANGLE, 5, 6, 7, 8);
             DrawShapeFake(ShapeType.ELLIPSE, 9, 10, 11, 12);
-            Assert.AreEqual(3, model.Shapes.Count);
+            Assert.AreEqual(2, model.Shapes.Count);
 
             model.Clear();
             Assert.IsFalse(model.IsPressed);
             Assert.AreEqual(0, model.Shapes.Count);
+        }
+
+        // test
+        [TestMethod()]
+        public void DrawLineTest()
+        {
+            DrawShapeFake(ShapeType.RECTANGLE, 10, 10, 30, 30);
+            DrawShapeFake(ShapeType.ELLIPSE, 110, 140, 150, 200);
+            Assert.AreEqual(2, model.Shapes.Count);
+
+            DrawShapeFake(ShapeType.LINE, 15, 27, 100, 120);
+            Assert.AreEqual(2, model.Shapes.Count);
+
+            DrawShapeFake(ShapeType.LINE, 15, 27, 130, 199);
+            Assert.AreEqual(3, model.Shapes.Count);
+        }
+
+        // test
+        [TestMethod()]
+        public void AddShapeTest()
+        {
+            Assert.AreEqual(0, model.Shapes.Count);
+            
+            model.AddShape(new Rectangle());
+            model.AddShape(new Ellipse());
+            Assert.AreEqual(2, model.Shapes.Count);
+            Assert.AreEqual(ShapeType.RECTANGLE, model.Shapes[0].ShapeType);
+            Assert.AreEqual(ShapeType.ELLIPSE, model.Shapes[1].ShapeType);
+
+        }
+
+        // test
+        [TestMethod()]
+        public void RemoveShapeTest()
+        {
+            Assert.AreEqual(0, model.Shapes.Count);
+            
+            model.AddShape(new Rectangle());
+            model.AddShape(new Ellipse());
+            Assert.AreEqual(2, model.Shapes.Count);
+            
+            model.RemoveShape();
+            Assert.AreEqual(1,  model.Shapes.Count);
+            Assert.AreEqual(ShapeType.RECTANGLE, model.Shapes[0].ShapeType);
+        }
+
+        // test
+        [TestMethod()]
+        public void UndoCommandTest()
+        {
+            DrawShapeFake(ShapeType.RECTANGLE, 10, 10, 30, 30);
+            DrawShapeFake(ShapeType.ELLIPSE, 110, 140, 150, 200);
+            Assert.AreEqual(2, model.Shapes.Count);
+            Assert.AreEqual(ShapeType.ELLIPSE, model.Shapes[1].ShapeType);
+
+            model.UndoCommand();
+            Assert.AreEqual(1, model.Shapes.Count);
+            Assert.AreEqual(ShapeType.RECTANGLE, model.Shapes[0].ShapeType);
+        }
+
+        // test
+        [TestMethod()]
+        public void RedoCommandTest()
+        {
+            DrawShapeFake(ShapeType.RECTANGLE, 10, 10, 30, 30);
+            DrawShapeFake(ShapeType.ELLIPSE, 110, 140, 150, 200);
+            DrawShapeFake(ShapeType.RECTANGLE, 70, 50, 120, 90);
+            Assert.AreEqual(3, model.Shapes.Count);
+            Assert.AreEqual(ShapeType.RECTANGLE, model.Shapes[2].ShapeType);
+
+            model.UndoCommand();
+            model.UndoCommand();
+            Assert.AreEqual(1, model.Shapes.Count);
+            Assert.AreEqual(ShapeType.RECTANGLE, model.Shapes[0].ShapeType);
+
+            model.RedoCommand();
+            Assert.AreEqual(2, model.Shapes.Count);
+            Assert.AreEqual(ShapeType.ELLIPSE, model.Shapes[1].ShapeType);
         }
 
         // test
@@ -119,6 +210,7 @@ namespace DrawingModel.Tests
                 isChanged = true;
             };
 
+            model.SetDrawingShape(ShapeType.RECTANGLE);
             model.HandlePointerPressed(17, 7);
             model.HandlePointerMoved(37, 64);
             Assert.IsTrue(isChanged);
