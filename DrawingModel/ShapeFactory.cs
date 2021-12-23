@@ -6,7 +6,8 @@ namespace DrawingModel
     {
         LINE,
         RECTANGLE,
-        ELLIPSE
+        ELLIPSE,
+        NULL
     }
 
     public class ShapeFactory

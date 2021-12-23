@@ -13,8 +13,8 @@ namespace DrawingModel
         private int _firstClickedShapeIndex;
         private int _selectedShapeIndex = -1;
         private bool _isPressed = false;
-        private ShapeType _currentShapeType = ShapeType.RECTANGLE;
-        private IShape _hint = new Rectangle();
+        private ShapeType _currentShapeType = ShapeType.NULL;
+        private IShape _hint = null;
         private readonly List<IShape> _shapes = new List<IShape>();
         private readonly CommandManager _commandManager = new CommandManager();
 
@@ -115,7 +115,7 @@ namespace DrawingModel
         // record first point coordinates on pointer pressed
         public void HandlePointerPressed(double posX, double posY)
         {
-            if (posX > 0 && posY > 0)
+            if (posX > 0 && posY > 0 && _currentShapeType != ShapeType.NULL)
             {
                 _selectedShapeIndex = -1;
                 _firstClickedShapeIndex = GetClickedShapeIndex(posX, posY);
