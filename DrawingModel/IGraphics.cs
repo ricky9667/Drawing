@@ -13,5 +13,8 @@
 
         // draw ellipse on canvas
         void DrawEllipse(double x1, double y1, double x2, double y2);
+
+        // draw shape selection on canvas
+        void DrawSelection(double x1, double y1, double x2, double y2);
     }
 }

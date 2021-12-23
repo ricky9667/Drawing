@@ -46,10 +46,21 @@
             }
         }
 
+        public bool IsSelected
+        {
+            get; set;
+        }
+
         // draw rectangle on canvas
         public void Draw(IGraphics graphics)
         {
             graphics.DrawRectangle(X1, Y1, X2, Y2);
+        }
+
+        // draw rectangle selection on canvas
+        public void DrawSelection(IGraphics graphics)
+        {
+            graphics.DrawSelection(X1, Y1, X2, Y2);
         }
 
         // check position in shape

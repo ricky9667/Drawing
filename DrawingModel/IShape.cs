@@ -37,8 +37,16 @@
             get;
         }
 
+        bool IsSelected
+        {
+            get; set;
+        }
+
         // draw shape on canvas
         void Draw(IGraphics graphics);
+
+        // draw shape selection on canvas
+        void DrawSelection(IGraphics graphics);
 
         // check position in shape
         bool IsPositionInShape(double posX, double posY);

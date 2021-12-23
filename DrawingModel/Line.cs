@@ -48,6 +48,11 @@ namespace DrawingModel
             }
         }
 
+        public bool IsSelected
+        {
+            get; set;
+        }
+
         public IShape FirstShape
         {
             get; set;
@@ -62,6 +67,12 @@ namespace DrawingModel
         public void Draw(IGraphics graphics)
         {
             graphics.DrawLine(X1, Y1, X2, Y2);
+        }
+
+        // draw line selection on canvas
+        public void DrawSelection(IGraphics graphics)
+        {
+            graphics.DrawSelection(X1, Y1, X2, Y2);
         }
 
         // change line coordinate from shapes

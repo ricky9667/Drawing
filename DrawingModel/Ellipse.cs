@@ -46,10 +46,21 @@
             }
         }
 
+        public bool IsSelected
+        {
+            get; set;
+        }
+
         // draw ellipse on canvas
         public void Draw(IGraphics graphics)
         {
             graphics.DrawEllipse(X1, Y1, X2, Y2);
+        }
+
+        // draw ellipse selection on canvas
+        public void DrawSelection(IGraphics graphics)
+        {
+            graphics.DrawSelection(X1, Y1, X2, Y2);
         }
 
         // check position in shape

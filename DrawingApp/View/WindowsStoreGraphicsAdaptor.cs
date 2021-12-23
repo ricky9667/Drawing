@@ -62,5 +62,19 @@ namespace DrawingApp.PresentationModel
 
             _canvas.Children.Add(ellipse);
         }
+
+        // draw shape selection on canvas
+        public void DrawSelection(double x1, double y1, double x2, double y2)
+        {
+            Windows.UI.Xaml.Shapes.Rectangle rectangle = new Windows.UI.Xaml.Shapes.Rectangle();
+
+            rectangle.Margin = new Windows.UI.Xaml.Thickness(Math.Min(x1, x2), Math.Min(y1, y2), 0, 0);
+            rectangle.Width = Math.Abs(x1 - x2);
+            rectangle.Height = Math.Abs(y1 - y2);
+            rectangle.Stroke = new SolidColorBrush(Colors.Red);
+            rectangle.StrokeThickness = 4F;
+
+            _canvas.Children.Add(rectangle);
+        }
     }
 }

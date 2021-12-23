@@ -11,10 +11,10 @@ namespace DrawingModel
         private double _firstPointX;
         private double _firstPointY;
         private int _firstClickedShapeIndex;
+        private int _selectedShapeIndex = -1;
         private bool _isPressed = false;
         private ShapeType _currentShapeType = ShapeType.RECTANGLE;
         private IShape _hint = new Rectangle();
-        private IShape _selectedShape = null;
         private readonly List<IShape> _shapes = new List<IShape>();
         private readonly CommandManager _commandManager = new CommandManager();
 
@@ -95,10 +95,6 @@ namespace DrawingModel
             for (int index = _shapes.Count - 1; index >= 0; index--)
             {
                 IShape shape = _shapes[index];
-                //if (shape.ShapeType == ShapeType.LINE)
-                //{
-                //    continue;
-                //}
                 if (shape.IsPositionInShape(posX, posY))
                 {
                     return index;
@@ -112,6 +108,7 @@ namespace DrawingModel
         {
             if (posX > 0 && posY > 0)
             {
+                _selectedShapeIndex = -1;
                 _firstClickedShapeIndex = GetClickedShapeIndex(posX, posY);
                 if (_currentShapeType != ShapeType.LINE || _firstClickedShapeIndex > -1)
                 {
@@ -141,7 +138,7 @@ namespace DrawingModel
                 _isPressed = false;
                 if (_firstPointX == posX && _firstPointY == posY)
                 {
-                    _selectedShape = new Rectangle();
+                    _selectedShapeIndex = GetClickedShapeIndex(posX, posY);
                     return;
                 }
 
@@ -185,6 +182,7 @@ namespace DrawingModel
         public void Clear()
         {
             _isPressed = false;
+            _selectedShapeIndex = -1;
             _commandManager.RunCommand(new ClearCommand(this));
             NotifyModelChanged();
         }
@@ -228,6 +226,9 @@ namespace DrawingModel
             
             if (_isPressed)
                 _hint.Draw(graphics);
+
+            if (_selectedShapeIndex != -1)
+                _shapes[_selectedShapeIndex].DrawSelection(graphics);
         }
 
         // notify observers
