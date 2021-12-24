@@ -45,6 +45,7 @@ namespace DrawingApp.PresentationModel
             rectangle.Height = Math.Abs(y1 - y2);
             rectangle.Stroke = new SolidColorBrush(Colors.Black);
             rectangle.Fill = new SolidColorBrush(Colors.Yellow);
+            rectangle.StrokeThickness = 2F;
 
             _canvas.Children.Add(rectangle);
         }
@@ -59,6 +60,7 @@ namespace DrawingApp.PresentationModel
             ellipse.Height = Math.Abs(y1 - y2);
             ellipse.Stroke = new SolidColorBrush(Colors.Black);
             ellipse.Fill = new SolidColorBrush(Colors.Orange);
+            ellipse.StrokeThickness = 2F;
 
             _canvas.Children.Add(ellipse);
         }

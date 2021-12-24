@@ -26,7 +26,7 @@ namespace DrawingForm.PresentationModel
         // draw line on canvas
         public void DrawLine(double x1, double y1, double x2, double y2)
         {
-            _graphics.DrawLine(_normalPen, (float)x1, (float)y1, (float)x2, (float)y2);
+            _graphics.DrawLine(Pens.Black, (float)x1, (float)y1, (float)x2, (float)y2);
         }
 
         // draw rectangle on canvas
