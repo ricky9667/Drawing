@@ -158,7 +158,6 @@ namespace DrawingModel
             if (_isPressed)
             {
                 _isPressed = false;
-                Console.WriteLine(_currentShapeType);
                 if (_currentShapeType == ShapeType.NULL)
                 {
                     _selectedShapeIndex = GetClickedShapeIndex(posX, posY);

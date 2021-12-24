@@ -93,7 +93,7 @@ namespace DrawingModel
         // check position in shape
         public bool IsPositionInShape(double posX, double posY)
         {
-            return false;
+            return X1 <= posX && posX <= X2 && Y1 <= posY && posY <= Y2;
         }
     }
 }
