@@ -9,7 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Width="1366" Height="786">
 
     <Grid Width="1366" Height="786">
-        <Canvas x:Name="_canvas" Margin="0,82,0,40" Background="White" Height="640" Canvas.ZIndex="-3" VerticalAlignment="Stretch" />
+        <Canvas x:Name="_canvas" Margin="0,82,0,40" Background="#FFFFFFA0" Height="640" Canvas.ZIndex="-3" VerticalAlignment="Stretch" />
         <TextBlock x:Name="_selectionTextBlock" Text="" TextWrapping="Wrap" Height="35" Width="300" HorizontalAlignment="Right" VerticalAlignment="Bottom" Canvas.Top="588" Canvas.Left="1100" FontSize="14" FocusVisualPrimaryBrush="White"/>
         <Button x:Name="_clearButton" Content="Clear" Margin="0,40,50,0" VerticalAlignment="Top" Width="100" HorizontalAlignment="Right"/>
         <Button x:Name="_lineButton" Content="Line" Margin="0,40,300,0" VerticalAlignment="Top" Width="120" HorizontalAlignment="Center"/>

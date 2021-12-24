@@ -72,9 +72,28 @@ namespace DrawingApp.PresentationModel
             rectangle.Width = Math.Abs(x1 - x2);
             rectangle.Height = Math.Abs(y1 - y2);
             rectangle.Stroke = new SolidColorBrush(Colors.Red);
+            rectangle.StrokeDashArray = new DoubleCollection() { 4F, 4F };
             rectangle.StrokeThickness = 4F;
 
             _canvas.Children.Add(rectangle);
+
+            DrawCornerCircle(x1, y1, 4);
+            DrawCornerCircle(x1, y2, 4);
+            DrawCornerCircle(x2, y1, 4);
+            DrawCornerCircle(x2, y2, 4);
+        }
+
+        // draw corner circle of shape
+        private void DrawCornerCircle(double posX, double posY, double radius)
+        {
+            Windows.UI.Xaml.Shapes.Ellipse ellipse = new Windows.UI.Xaml.Shapes.Ellipse();
+
+            ellipse.Margin = new Windows.UI.Xaml.Thickness((int)(posX - radius), (int)(posY - radius), 0, 0);
+            ellipse.Width = Math.Abs((int)(2 * radius));
+            ellipse.Height = Math.Abs((int)(2 * radius));
+            ellipse.Stroke = new SolidColorBrush(Colors.Black);
+
+            _canvas.Children.Add(ellipse);
         }
     }
 }

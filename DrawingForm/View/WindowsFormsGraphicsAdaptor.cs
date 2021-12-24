@@ -7,14 +7,13 @@ namespace DrawingForm.PresentationModel
     class WindowsFormsGraphicsAdaptor : IGraphics
     {
         private readonly Graphics _graphics;
-        private readonly Pen _normalPen;
-        private readonly Pen _selectionPen;
+        private readonly Pen _normalPen = new Pen(Color.Black, 2);
+        private readonly Pen _selectionPen = new Pen(Color.Red, 3);
+        private readonly Pen _cornerPen = new Pen(Color.Black, 1);
 
         public WindowsFormsGraphicsAdaptor(Graphics graphics)
         {
             _graphics = graphics;
-            _normalPen = new Pen(Color.Black, 2);
-            _selectionPen = new Pen(Color.Red, 3);
             _selectionPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Custom;
             _selectionPen.DashPattern = new float[] { 4F, 4F };
         }
@@ -51,6 +50,18 @@ namespace DrawingForm.PresentationModel
         {
             System.Drawing.Rectangle rectangle = new System.Drawing.Rectangle((int)Math.Min(x1, x2), (int)Math.Min(y1, y2), (int)Math.Abs(x1 - x2), (int)Math.Abs(y1 - y2));
             _graphics.DrawRectangle(_selectionPen, rectangle);
+
+            DrawCornerCircle(x1, y1, 3);
+            DrawCornerCircle(x1, y2, 3);
+            DrawCornerCircle(x2, y1, 3);
+            DrawCornerCircle(x2, y2, 3);
+        }
+
+        // draw corner circle of shape
+        private void DrawCornerCircle(double posX, double posY, double radius)
+        {
+            System.Drawing.Rectangle rectangle = new System.Drawing.Rectangle((int)(posX - radius), (int)(posY - radius), (int)(2 * radius), (int)(2 * radius));
+            _graphics.DrawEllipse(_cornerPen, rectangle);
         }
     }
 }
