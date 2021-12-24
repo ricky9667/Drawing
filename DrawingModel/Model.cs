@@ -123,14 +123,19 @@ namespace DrawingModel
         // record first point coordinates on pointer pressed
         public void HandlePointerPressed(double posX, double posY)
         {
-            if (posX > 0 && posY > 0 && _currentShapeType != ShapeType.NULL)
+            if (posX > 0 && posY > 0)
             {
                 _selectedShapeIndex = -1;
                 _firstClickedShapeIndex = GetClickedShapeIndex(posX, posY);
                 if (_currentShapeType != ShapeType.LINE || _firstClickedShapeIndex > -1)
                 {
-                    _hint.X1 = _firstPointX = posX;
-                    _hint.Y1 = _firstPointY = posY;
+                    _firstPointX = posX;
+                    _firstPointY = posY;
+                    if (_hint != null)
+                    {
+                        _hint.X1 = posX;
+                        _hint.Y1 = posY;
+                    }
                     _isPressed = true;
                 }
             }
@@ -139,7 +144,7 @@ namespace DrawingModel
         // record second point coordinates on pointer moved
         public void HandlePointerMoved(double posX, double posY)
         {
-            if (_isPressed)
+            if (_isPressed && _hint != null)
             {
                 _hint.X2 = posX;
                 _hint.Y2 = posY;
@@ -153,17 +158,20 @@ namespace DrawingModel
             if (_isPressed)
             {
                 _isPressed = false;
-                if (_firstPointX == posX && _firstPointY == posY)
+                Console.WriteLine(_currentShapeType);
+                if (_currentShapeType == ShapeType.NULL)
                 {
                     _selectedShapeIndex = GetClickedShapeIndex(posX, posY);
-                    return;
                 }
-
-                if (_currentShapeType == ShapeType.LINE)
-                    AddNewLine(posX, posY);
                 else
-                    AddNewShape(posX, posY);
-
+                {
+                    if (_currentShapeType == ShapeType.LINE)
+                        AddNewLine(posX, posY);
+                    else
+                        AddNewShape(posX, posY);
+                }
+                _currentShapeType = ShapeType.NULL;
+                _hint = null;
                 NotifyModelChanged();
             }
         }
@@ -219,12 +227,14 @@ namespace DrawingModel
         // undo command
         public void UndoCommand()
         {
+            _selectedShapeIndex = -1;
             _commandManager.Undo();
         }
 
         // redo command
         public void RedoCommand()
         {
+            _selectedShapeIndex = -1;
             _commandManager.Redo();
         }
 
@@ -241,7 +251,7 @@ namespace DrawingModel
                 if (shape.ShapeType != ShapeType.LINE)
                     shape.Draw(graphics);
             
-            if (_isPressed)
+            if (_isPressed && _hint != null)
                 _hint.Draw(graphics);
 
             if (_selectedShapeIndex != -1)
