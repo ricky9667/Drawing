@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DrawingModel
 {
@@ -159,16 +160,12 @@ namespace DrawingModel
             {
                 _isPressed = false;
                 if (_currentShapeType == ShapeType.NULL)
-                {
                     _selectedShapeIndex = GetClickedShapeIndex(posX, posY);
-                }
+                else if (_currentShapeType == ShapeType.LINE)
+                    AddNewLine(posX, posY);
                 else
-                {
-                    if (_currentShapeType == ShapeType.LINE)
-                        AddNewLine(posX, posY);
-                    else
-                        AddNewShape(posX, posY);
-                }
+                    AddNewShape(posX, posY);
+
                 _currentShapeType = ShapeType.NULL;
                 _hint = null;
                 NotifyModelChanged();
@@ -241,15 +238,13 @@ namespace DrawingModel
         public void Draw(IGraphics graphics)
         {
             graphics.ClearAll();
-            
-            foreach (IShape shape in _shapes)
-                if (shape.ShapeType == ShapeType.LINE)
-                    shape.Draw(graphics);
 
-            foreach (IShape shape in _shapes)
-                if (shape.ShapeType != ShapeType.LINE)
-                    shape.Draw(graphics);
-            
+            foreach (IShape shape in _shapes.Where(shape => shape.ShapeType == ShapeType.LINE).ToList())
+                shape.Draw(graphics);
+
+            foreach (IShape shape in _shapes.Where(shape => shape.ShapeType != ShapeType.LINE).ToList())
+                shape.Draw(graphics);
+
             if (_isPressed && _hint != null)
                 _hint.Draw(graphics);
 

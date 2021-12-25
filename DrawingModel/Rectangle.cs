@@ -4,6 +4,7 @@ namespace DrawingModel
 {
     public class Rectangle : IShape
     {
+        private readonly int _divider = 2;
         public ShapeType ShapeType
         {
             get
@@ -32,14 +33,6 @@ namespace DrawingModel
             get; set;
         }
 
-        public double CenterX
-        {
-            get
-            {
-                return (X1 + X2) / 2;
-            }
-        }
-
         public string ShapeInfo
         {
             get
@@ -51,11 +44,19 @@ namespace DrawingModel
             }
         }
 
+        public double CenterX
+        {
+            get
+            {
+                return (X1 + X2) / _divider;
+            }
+        }
+
         public double CenterY
         {
             get
             {
-                return (Y1 + Y2) / 2;
+                return (Y1 + Y2) / _divider;
             }
         }
 

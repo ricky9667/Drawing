@@ -9,10 +9,7 @@ namespace DrawingModel
         public ClearCommand(Model model)
         {
             _model = model;
-            foreach (IShape shape in model.Shapes)
-            {
-                _shapes.Add(shape);
-            }
+            _shapes.AddRange(model.Shapes);
         }
 
         // clear shapes
@@ -24,10 +21,7 @@ namespace DrawingModel
         // undo clear shapes
         public void UndoExecute()
         {
-            foreach (IShape shape in _shapes)
-            {
-                _model.Shapes.Add(shape);
-            }
+            _model.Shapes.AddRange(_shapes);
         }
     }
 }

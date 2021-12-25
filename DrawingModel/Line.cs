@@ -4,6 +4,7 @@ namespace DrawingModel
 {
     public class Line : IShape
     {
+        private readonly int _divider = 2;
         public ShapeType ShapeType
         {
             get
@@ -47,7 +48,7 @@ namespace DrawingModel
         {
             get
             {
-                return (X1 + X2) / 2;
+                return (X1 + X2) / _divider;
             }
         }
 
@@ -55,7 +56,7 @@ namespace DrawingModel
         {
             get
             {
-                return (Y1 + Y2) / 2;
+                return (Y1 + Y2) / _divider;
             }
         }
 

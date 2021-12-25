@@ -84,9 +84,7 @@ namespace DrawingModel.Tests
             model.HandlePointerPressed(testX1, testY1);
             model.HandlePointerMoved(testX2, testY2);
             model.HandlePointerReleased(testX2, testY2);
-            
-            Assert.AreEqual(testX2, model.Hint.X2);
-            Assert.AreEqual(testY2, model.Hint.Y2);
+
             Assert.IsFalse(model.IsPressed);
 
             Assert.AreEqual(1, model.Shapes.Count);

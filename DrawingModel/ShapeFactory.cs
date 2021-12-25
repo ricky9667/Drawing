@@ -4,10 +4,10 @@ namespace DrawingModel
 {
     public enum ShapeType
     {
+        NULL,
         LINE,
         RECTANGLE,
-        ELLIPSE,
-        NULL
+        ELLIPSE
     }
 
     public class ShapeFactory

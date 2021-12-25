@@ -51,16 +51,17 @@ namespace DrawingForm.PresentationModel
             System.Drawing.Rectangle rectangle = new System.Drawing.Rectangle((int)Math.Min(x1, x2), (int)Math.Min(y1, y2), (int)Math.Abs(x1 - x2), (int)Math.Abs(y1 - y2));
             _graphics.DrawRectangle(_selectionPen, rectangle);
 
-            DrawCornerCircle(x1, y1, 3);
-            DrawCornerCircle(x1, y2, 3);
-            DrawCornerCircle(x2, y1, 3);
-            DrawCornerCircle(x2, y2, 3);
+            const int RADIUS = 3;
+            DrawCornerCircle(x1, y1, RADIUS);
+            DrawCornerCircle(x1, y2, RADIUS);
+            DrawCornerCircle(x2, y1, RADIUS);
+            DrawCornerCircle(x2, y2, RADIUS);
         }
 
         // draw corner circle of shape
         private void DrawCornerCircle(double posX, double posY, double radius)
         {
-            System.Drawing.Rectangle rectangle = new System.Drawing.Rectangle((int)(posX - radius), (int)(posY - radius), (int)(2 * radius), (int)(2 * radius));
+            System.Drawing.Rectangle rectangle = new System.Drawing.Rectangle((int)(posX - radius), (int)(posY - radius), (int)(radius + radius), (int)(radius + radius));
             _graphics.DrawEllipse(_cornerPen, rectangle);
         }
     }
