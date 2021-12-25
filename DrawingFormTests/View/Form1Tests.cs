@@ -43,10 +43,11 @@ namespace DrawingForm.Tests
 
         // test
         [TestMethod()]
-        public void DrawSquare()
+        public void DrawRectangle()
         {
             _robot.ClickButton("Rectangle");
             _robot.DragAndDrop(-100, -100, 100, 100);
+            _robot.ClickPosition(0, 0);
         }
 
         // test

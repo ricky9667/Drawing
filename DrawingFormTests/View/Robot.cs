@@ -119,6 +119,17 @@ namespace MainFormUITest
         }
 
         // test
+        public void ClickPosition(double posX, double posY)
+        {
+            WindowsElement element = _driver.FindElementByAccessibilityId("_canvas");
+            Actions action = new Actions(_driver);
+            action.MoveToElement(element);
+            action.MoveByOffset((int)posX, (int)posY);
+            action.Click();
+            action.Perform();
+        }
+
+        // test
         public void DragAndDrop(double x1, double y1, double x2, double y2)
         {
             WindowsElement element = _driver.FindElementByAccessibilityId("_canvas");
