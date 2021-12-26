@@ -68,7 +68,7 @@ namespace DrawingForm
             this._actionsToolStrip.ImageScalingSize = new System.Drawing.Size(32, 32);
             this._actionsToolStrip.Location = new System.Drawing.Point(0, 0);
             this._actionsToolStrip.Name = "_actionsToolStrip";
-            this._actionsToolStrip.Size = new System.Drawing.Size(1340, 25);
+            this._actionsToolStrip.Size = new System.Drawing.Size(1340, 50);
             this._actionsToolStrip.TabIndex = 3;
             this._actionsToolStrip.Text = "toolStrip1";
             // 
