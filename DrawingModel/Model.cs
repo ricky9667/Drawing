@@ -14,10 +14,15 @@ namespace DrawingModel
         private int _firstClickedShapeIndex;
         private int _selectedShapeIndex = -1;
         private bool _isPressed = false;
-        private ShapeType _currentShapeType = ShapeType.NULL;
         private IShape _hint = null;
+        private IState _currentState = null;
         private readonly List<IShape> _shapes = new List<IShape>();
         private readonly CommandManager _commandManager = new CommandManager();
+
+        public Model()
+        {
+            _currentState = new PointerState(this);
+        }
 
         public double FirstPointX
         {
@@ -47,7 +52,7 @@ namespace DrawingModel
         {
             get
             {
-                return _currentShapeType;
+                return _currentState.DrawingShape;
             }
         }
 
@@ -103,12 +108,90 @@ namespace DrawingModel
         // set current drawing shape and hint shape
         public void SetDrawingShape(ShapeType shapeType)
         {
-            _currentShapeType = shapeType;
             _hint = ShapeFactory.CreateShape(shapeType);
+            _currentState = CreateStateInstance(shapeType);
+        }
+
+        // create state instance
+        private IState CreateStateInstance(ShapeType shapeType)
+        {
+            switch (shapeType)
+            {
+                case ShapeType.LINE:
+                    return new DrawingLineState(this);
+                case ShapeType.RECTANGLE:
+                    return new DrawingRectangleState(this);
+                case ShapeType.ELLIPSE:
+                    return new DrawingEllipseState(this);
+                default:
+                    return new PointerState(this);
+            }
+        }
+
+        // record first point coordinates on pointer pressed
+        public void HandlePointerPressed(double posX, double posY)
+        {
+            if (posX > 0 && posY > 0)
+            {
+                _selectedShapeIndex = -1;
+                _firstClickedShapeIndex = GetClickedShapeIndex(posX, posY);
+                _currentState.HandlePointerPressed(posX, posY);
+                _isPressed = (_currentState.DrawingShape != ShapeType.LINE || _firstClickedShapeIndex > -1);
+            }
+        }
+
+        // record second point coordinates on pointer moved
+        public void HandlePointerMoved(double posX, double posY)
+        {
+            if (_isPressed)
+            {
+                _currentState.HandlePointerMoved(posX, posY);
+                NotifyModelChanged();
+            }
+        }
+
+        // add hint to saved shapes on pointer released
+        public void HandlePointerReleased(double posX, double posY)
+        {
+            if (_isPressed)
+            {
+                _isPressed = false;
+                _currentState.HandlePointerReleased(posX, posY);
+                _hint = null;
+                _currentState = new PointerState(this);
+                NotifyModelChanged();
+            }
+        }
+
+        // set first point coordinates
+        public void SetFirstPointCoordinates(double posX, double posY)
+        {
+            _firstPointX = posX;
+            _firstPointY = posY;
+        }
+
+        // set hint first point coordinates
+        public void SetHintFirstPointCoordinates(double posX, double posY)
+        {
+            if (_hint == null)
+                return;
+
+            _hint.X1 = posX;
+            _hint.Y1 = posY;
+        }
+
+        // set hint second point coordinates
+        public void SetHintSecondPointCoordinates(double posX, double posY)
+        {
+            if (_hint == null)
+                return;
+
+            _hint.X2 = posX;
+            _hint.Y2 = posY;
         }
 
         // get shape index if coordinates is in a particular shape
-        private int GetClickedShapeIndex(double posX, double posY)
+        public int GetClickedShapeIndex(double posX, double posY)
         {
             for (int index = _shapes.Count - 1; index >= 0; index--)
             {
@@ -121,65 +204,18 @@ namespace DrawingModel
             return -1;
         }
 
-        // record first point coordinates on pointer pressed
-        public void HandlePointerPressed(double posX, double posY)
+        // save new selected shape index
+        public void UpdateSelectedShapeIndex(double posX, double posY)
         {
-            if (posX > 0 && posY > 0)
-            {
-                _selectedShapeIndex = -1;
-                _firstClickedShapeIndex = GetClickedShapeIndex(posX, posY);
-                if (_currentShapeType != ShapeType.LINE || _firstClickedShapeIndex > -1)
-                {
-                    _firstPointX = posX;
-                    _firstPointY = posY;
-                    if (_hint != null)
-                    {
-                        _hint.X1 = posX;
-                        _hint.Y1 = posY;
-                    }
-                    _isPressed = true;
-                }
-            }
-        }
-
-        // record second point coordinates on pointer moved
-        public void HandlePointerMoved(double posX, double posY)
-        {
-            if (_isPressed && _hint != null)
-            {
-                _hint.X2 = posX;
-                _hint.Y2 = posY;
-                NotifyModelChanged();
-            }
-        }
-
-        // add hint to saved shapes on pointer released
-        public void HandlePointerReleased(double posX, double posY)
-        {
-            if (_isPressed)
-            {
-                _isPressed = false;
-                if (_currentShapeType == ShapeType.NULL)
-                    _selectedShapeIndex = GetClickedShapeIndex(posX, posY);
-                else if (_currentShapeType == ShapeType.LINE)
-                    AddNewLine(posX, posY);
-                else
-                    AddNewShape(posX, posY);
-
-                _currentShapeType = ShapeType.NULL;
-                _hint = null;
-                NotifyModelChanged();
-            }
+            _selectedShapeIndex = GetClickedShapeIndex(posX, posY);
         }
 
         // add new line to shapes list
-        private void AddNewLine(double posX, double posY)
+        public void AddNewLine(double posX, double posY)
         {
             int secondShapeIndex = GetClickedShapeIndex(posX, posY);
             if (secondShapeIndex == -1)
-            {
                 return;
-            }
 
             Line hint = new Line();
             hint.FirstShape = _shapes[_firstClickedShapeIndex];
@@ -189,9 +225,9 @@ namespace DrawingModel
         }
 
         // add new rectangle or ellipse to shapes list
-        private void AddNewShape(double posX, double posY)
+        public void AddNewShape(double posX, double posY)
         {
-            IShape hint = ShapeFactory.CreateShape(_currentShapeType);
+            IShape hint = ShapeFactory.CreateShape(_currentState.DrawingShape);
             hint.X1 = _firstPointX;
             hint.Y1 = _firstPointY;
             hint.X2 = posX;
