@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DrawingModel
+﻿namespace DrawingModel
 {
     public interface IShape
     {
+        ShapeType ShapeType
+        {
+            get; 
+        }
+
         double X1
         {
             get; set;
@@ -28,7 +27,28 @@ namespace DrawingModel
             get; set;
         }
 
+        string ShapeInfo
+        {
+            get;
+        }
+
+        double CenterX
+        {
+            get;
+        }
+
+        double CenterY
+        {
+            get;
+        }
+
         // draw shape on canvas
         void Draw(IGraphics graphics);
+
+        // draw shape selection on canvas
+        void DrawSelection(IGraphics graphics);
+
+        // check position in shape
+        bool IsPositionInShape(double posX, double posY);
     }
 }

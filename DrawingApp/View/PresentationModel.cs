@@ -6,7 +6,7 @@ namespace DrawingApp.PresentationModel
     class PresentationModel
     {
         private readonly Model _model;
-        private IGraphics _graphics;
+        private readonly IGraphics _graphics;
         public PresentationModel(Model model, Canvas canvas)
         {
             _model = model;
@@ -18,6 +18,14 @@ namespace DrawingApp.PresentationModel
         {
             // 重複使用igraphics物件
             _model.Draw(_graphics);
+        }
+
+        public string SelectedShapeInfo
+        {
+            get
+            {
+                return _model.SelectedShapeInfo;
+            }
         }
     }
 }

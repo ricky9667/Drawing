@@ -119,16 +119,38 @@ namespace MainFormUITest
         }
 
         // test
-        public void DragAndDrop(double x1, double y1, double x2, double y2)
+        public void ClickPosition(double posX, double posY, Tuple<int, int> center = null)
         {
             WindowsElement element = _driver.FindElementByAccessibilityId("_canvas");
             Actions action = new Actions(_driver);
             action.MoveToElement(element);
+            if (center != null)
+                action.MoveByOffset(-center.Item1, -center.Item2);
+            action.MoveByOffset((int)posX, (int)posY);
+            action.Click();
+            action.Perform();
+        }
+
+        // test
+        public void DragAndDrop(double x1, double y1, double x2, double y2, Tuple<int, int> center = null)
+        {
+            WindowsElement element = _driver.FindElementByAccessibilityId("_canvas");
+            Actions action = new Actions(_driver);
+            action.MoveToElement(element);
+            if (center != null)
+                action.MoveByOffset(-center.Item1, -center.Item2);
             action.MoveByOffset((int)x1, (int)y1);
             action.ClickAndHold();
             action.MoveByOffset((int)(x2 - x1), (int)(y2 - y1));
             action.Release();
             action.Perform();
+        }
+
+        // test
+        public string GetElementText(string id)
+        {
+            WindowsElement element = _driver.FindElementByAccessibilityId(id);
+            return element.Text;
         }
 
         // test

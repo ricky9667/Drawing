@@ -29,11 +29,17 @@ namespace DrawingApp
             _model = new Model();
             _presentationModel = new PresentationModel.PresentationModel(_model, _canvas);
             _model._modelChanged += HandleModelChanged;
+            _undoButton.IsEnabled = _model.CanUndo;
+            _redoButton.IsEnabled = _model.CanRedo;
+            _selectionTextBlock.Text = "";
         }
 
         // setup component events
         private void InitializeEvents()
         {
+            _undoButton.Click += HandleUndoButtonClick;
+            _redoButton.Click += HandleRedoButtonClick;
+
             _canvas.PointerPressed += HandleCanvasPressed;
             _canvas.PointerReleased += HandleCanvasReleased;
             _canvas.PointerMoved += HandleCanvasMoved;
@@ -42,6 +48,20 @@ namespace DrawingApp
             _lineButton.Click += HandleLineButtonClick;
             _rectangleButton.Click += HandleRectangleButtonClick;
             _ellipseButton.Click += HandleEllipseButtonClick;
+        }
+
+        // undo last command
+        private void HandleUndoButtonClick(object sender, RoutedEventArgs e)
+        {
+            _model.UndoCommand();
+            HandleModelChanged();
+        }
+
+        // redo last command
+        private void HandleRedoButtonClick(object sender, RoutedEventArgs e)
+        {
+            _model.RedoCommand();
+            HandleModelChanged();
         }
 
         // clear drawings on canvas
@@ -102,11 +122,15 @@ namespace DrawingApp
                 _ellipseButton.IsEnabled = true;
             }
             _model.HandlePointerReleased(e.GetCurrentPoint(_canvas).Position.X, e.GetCurrentPoint(_canvas).Position.Y);
+            HandleModelChanged();
         }
 
         // paint drawings on canvas
         public void HandleModelChanged()
         {
+            _undoButton.IsEnabled = _model.CanUndo;
+            _redoButton.IsEnabled = _model.CanRedo;
+            _selectionTextBlock.Text = _presentationModel.SelectedShapeInfo;
             _presentationModel.Draw();
         }
     }
