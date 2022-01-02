@@ -263,11 +263,15 @@ namespace DrawingModel
         // add new rectangle or ellipse to shapes list
         public void AddNewShape(double posX, double posY)
         {
+            const double MIN_AREA = 10;
+            if (Math.Abs((_firstPointX - posX) * (_firstPointY - posY)) < MIN_AREA) // avoid shapes that are too small
+                return;
+
             IShape hint = ShapeFactory.CreateShape(_currentState.DrawingShape);
-            hint.X1 = _firstPointX;
-            hint.Y1 = _firstPointY;
-            hint.X2 = posX;
-            hint.Y2 = posY;
+            hint.X1 = Math.Min(_firstPointX, posX);
+            hint.Y1 = Math.Min(_firstPointY, posY);
+            hint.X2 = Math.Max(_firstPointX, posX);
+            hint.Y2 = Math.Max(_firstPointY, posY);
             hint.UpdateSavedPosition();
             _commandManager.RunCommand(new DrawCommand(this, hint));
         }
