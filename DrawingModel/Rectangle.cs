@@ -5,6 +5,7 @@ namespace DrawingModel
     public class Rectangle : IShape
     {
         private readonly int _divider = 2;
+        private Tuple<double, double, double, double> _savedPosition;
         public ShapeType ShapeType
         {
             get
@@ -70,6 +71,21 @@ namespace DrawingModel
         public void DrawSelection(IGraphics graphics)
         {
             graphics.DrawSelection(X1, Y1, X2, Y2);
+        }
+
+        // update coordinates to saved position
+        public void UpdateSavedPosition()
+        {
+            _savedPosition = new Tuple<double, double, double, double>(X1, Y1, X2, Y2);
+        }
+
+        // move shape
+        public void MoveShapeByOffset(double offsetX, double offsetY)
+        {
+            X1 = _savedPosition.Item1 + offsetX;
+            Y1 = _savedPosition.Item2 + offsetY;
+            X2 = _savedPosition.Item3 + offsetX;
+            Y2 = _savedPosition.Item4 + offsetY;
         }
 
         // check position in shape

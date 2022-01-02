@@ -91,6 +91,18 @@ namespace DrawingModel
             Y2 = SecondShape.CenterY;
         }
 
+        // update coordinates to saved position
+        public void UpdateSavedPosition()
+        {
+
+        }
+
+        // move shape
+        public void MoveShapeByOffset(double offsetX, double offsetY)
+        {
+            
+        }
+
         // check position in shape
         public bool IsPositionInShape(double posX, double posY)
         {

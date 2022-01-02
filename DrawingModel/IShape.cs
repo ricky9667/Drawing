@@ -48,6 +48,12 @@
         // draw shape selection on canvas
         void DrawSelection(IGraphics graphics);
 
+        // update coordinates to saved position
+        void UpdateSavedPosition();
+
+        // move shape
+        void MoveShapeByOffset(double offsetX, double offsetY);
+
         // check position in shape
         bool IsPositionInShape(double posX, double posY);
     }

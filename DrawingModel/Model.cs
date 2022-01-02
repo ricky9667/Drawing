@@ -191,7 +191,7 @@ namespace DrawingModel
         }
 
         // get shape index if coordinates is in a particular shape
-        public int GetClickedShapeIndex(double posX, double posY)
+        private int GetClickedShapeIndex(double posX, double posY)
         {
             for (int index = _shapes.Count - 1; index >= 0; index--)
             {
@@ -208,6 +208,32 @@ namespace DrawingModel
         public void UpdateSelectedShapeIndex(double posX, double posY)
         {
             _selectedShapeIndex = GetClickedShapeIndex(posX, posY);
+        }
+
+        // move selected shape
+        public void UpdateSelectedShapeCoordinates(double posX, double posY)
+        {
+            if (_selectedShapeIndex > -1)
+            {
+                IShape shape = _shapes[_selectedShapeIndex];
+                if (shape.ShapeType == ShapeType.RECTANGLE || shape.ShapeType == ShapeType.ELLIPSE)
+                {
+                    shape.MoveShapeByOffset(posX - _firstPointX, posY - _firstPointY);
+                }
+            }
+        }
+
+        // move command
+        public void MoveShape(double posX, double posY)
+        {
+            if (_selectedShapeIndex > -1)
+            {
+                IShape shape = _shapes[_selectedShapeIndex];
+                if (shape.ShapeType == ShapeType.RECTANGLE || shape.ShapeType == ShapeType.ELLIPSE)
+                {
+                    _commandManager.RunCommand(new MoveCommand(shape, posX - _firstPointX, posY - _firstPointY));
+                }
+            }
         }
 
         // add new line to shapes list
@@ -232,6 +258,7 @@ namespace DrawingModel
             hint.Y1 = _firstPointY;
             hint.X2 = posX;
             hint.Y2 = posY;
+            hint.UpdateSavedPosition();
             _commandManager.RunCommand(new DrawCommand(this, hint));
         }
 
@@ -242,18 +269,6 @@ namespace DrawingModel
             _selectedShapeIndex = -1;
             _commandManager.RunCommand(new ClearCommand(this));
             NotifyModelChanged();
-        }
-
-        // add shape
-        public void AddShape(IShape shape)
-        {
-            _shapes.Add(shape);
-        }
-
-        // remove shape
-        public void RemoveShape()
-        {
-            _shapes.RemoveAt(_shapes.Count - 1);
         }
 
         // undo command

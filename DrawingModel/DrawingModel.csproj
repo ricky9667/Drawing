@@ -54,6 +54,7 @@
     <Compile Include="IState.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="Model.cs" />
+    <Compile Include="MoveCommand.cs" />
     <Compile Include="PointerState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rectangle.cs" />

@@ -155,6 +155,9 @@
     <Compile Include="..\DrawingModel\Model.cs">
       <Link>Model\Model.cs</Link>
     </Compile>
+    <Compile Include="..\DrawingModel\MoveCommand.cs">
+      <Link>Model\MoveCommand.cs</Link>
+    </Compile>
     <Compile Include="..\DrawingModel\PointerState.cs">
       <Link>Model\PointerState.cs</Link>
     </Compile>
