@@ -196,10 +196,18 @@ namespace DrawingModel
             for (int index = _shapes.Count - 1; index >= 0; index--)
             {
                 IShape shape = _shapes[index];
+                if (shape.ShapeType == ShapeType.LINE)
+                    continue;
                 if (shape.IsPositionInShape(posX, posY))
-                {
+                    return index; 
+            }
+            for (int index = _shapes.Count - 1; index >= 0; index--)
+            {
+                IShape shape = _shapes[index];
+                if (shape.ShapeType != ShapeType.LINE)
+                    continue;
+                if (shape.IsPositionInShape(posX, posY))
                     return index;
-                }
             }
             return -1;
         }
@@ -211,42 +219,44 @@ namespace DrawingModel
         }
 
         // move selected shape
-        public void UpdateSelectedShapeCoordinates(double posX, double posY)
+        public void UpdateMovingShape(double posX, double posY)
         {
             if (_selectedShapeIndex > -1)
             {
                 IShape shape = _shapes[_selectedShapeIndex];
-                if (shape.ShapeType == ShapeType.RECTANGLE || shape.ShapeType == ShapeType.ELLIPSE)
-                {
-                    shape.MoveShapeByOffset(posX - _firstPointX, posY - _firstPointY);
-                }
+                shape.MoveShapeByOffset(posX - _firstPointX, posY - _firstPointY);
+                UpdateLinesPosition();
             }
         }
 
-        // move command
+        // move shape
         public void MoveShape(double posX, double posY)
         {
             if (_selectedShapeIndex > -1)
             {
                 IShape shape = _shapes[_selectedShapeIndex];
-                if (shape.ShapeType == ShapeType.RECTANGLE || shape.ShapeType == ShapeType.ELLIPSE)
-                {
-                    _commandManager.RunCommand(new MoveCommand(shape, posX - _firstPointX, posY - _firstPointY));
-                }
+                _commandManager.RunCommand(new MoveCommand(this, shape, posX - _firstPointX, posY - _firstPointY));
             }
+        }
+
+        // locate lines
+        public void UpdateLinesPosition()
+        {
+            foreach (IShape shape in _shapes.Where(shape => shape.ShapeType == ShapeType.LINE).ToList())
+                shape.UpdateSavedPosition();
         }
 
         // add new line to shapes list
         public void AddNewLine(double posX, double posY)
         {
-            int secondShapeIndex = GetClickedShapeIndex(posX, posY);
-            if (secondShapeIndex == -1)
+            int shapeIndex = GetClickedShapeIndex(posX, posY);
+            if (shapeIndex == -1 || _shapes[shapeIndex].ShapeType == ShapeType.LINE)
                 return;
 
             Line hint = new Line();
             hint.FirstShape = _shapes[_firstClickedShapeIndex];
-            hint.SecondShape = _shapes[secondShapeIndex];
-            hint.LocatePositionByShapes();
+            hint.SecondShape = _shapes[shapeIndex];
+            hint.UpdateSavedPosition();
             _commandManager.RunCommand(new DrawCommand(this, hint));
         }
 
@@ -290,10 +300,11 @@ namespace DrawingModel
         {
             graphics.ClearAll();
 
-            foreach (IShape shape in _shapes.Where(shape => shape.ShapeType == ShapeType.LINE).ToList())
-                shape.Draw(graphics);
+            List<IShape> shapes = new List<IShape>();
+            shapes.AddRange(_shapes.Where(shape => shape.ShapeType == ShapeType.LINE).ToList());
+            shapes.AddRange(_shapes.Where(shape => shape.ShapeType != ShapeType.LINE).ToList());
 
-            foreach (IShape shape in _shapes.Where(shape => shape.ShapeType != ShapeType.LINE).ToList())
+            foreach (IShape shape in shapes)
                 shape.Draw(graphics);
 
             if (_isPressed && _hint != null)

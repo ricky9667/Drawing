@@ -26,7 +26,7 @@
         // handle pointer moved
         public void HandlePointerMoved(double posX, double posY)
         {
-            _model.UpdateSelectedShapeCoordinates(posX, posY);
+            _model.UpdateMovingShape(posX, posY);
         }
 
         // handle pointer released

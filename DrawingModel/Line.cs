@@ -82,19 +82,13 @@ namespace DrawingModel
             graphics.DrawSelection(X1, Y1, X2, Y2);
         }
 
-        // change line coordinate from shapes
-        public void LocatePositionByShapes()
+        // update coordinates to saved position
+        public void UpdateSavedPosition()
         {
             X1 = FirstShape.CenterX;
             Y1 = FirstShape.CenterY;
             X2 = SecondShape.CenterX;
             Y2 = SecondShape.CenterY;
-        }
-
-        // update coordinates to saved position
-        public void UpdateSavedPosition()
-        {
-
         }
 
         // move shape
