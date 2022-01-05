@@ -11,6 +11,9 @@ namespace DrawingModel
         public event ModelChangedEventHandler _modelChanged;
         public delegate void ModelChangedEventHandler();
 
+        private const string APPLICATION_NAME = "Drawing";
+        private const string CLIENT_SECRET_FILENAME = "clientSecret.json";
+        private const string FILENAME = "Shapes.txt";
         private double _firstPointX;
         private double _firstPointY;
         private int _firstClickedShapeIndex;
@@ -20,7 +23,7 @@ namespace DrawingModel
         private IState _currentState = null;
         private readonly List<IShape> _shapes = new List<IShape>();
         private readonly CommandManager _commandManager = new CommandManager();
-
+        private GoogleDriveService _service = null;
         public Model()
         {
             _currentState = new PointerState(this);
@@ -323,12 +326,10 @@ namespace DrawingModel
         // save shapes image and data
         public void SaveShapes()
         {
-            const string filename = "Shapes.txt";
+            string docPath = Directory.GetCurrentDirectory();
+            Console.WriteLine("Save directory: " + docPath);
 
-            // Set a variable to the Documents path.
-            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, filename)))
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, FILENAME)))
             {
                 foreach (IShape shape in _shapes)
                 {
@@ -348,16 +349,32 @@ namespace DrawingModel
                     Console.WriteLine(shape.ShapeType + " is saved to file");
                 }
             }
+
+            if (_service == null)
+                _service = new GoogleDriveService(APPLICATION_NAME, Path.Combine(docPath, CLIENT_SECRET_FILENAME));
+            const string CONTENT_TYPE = "text/txt";
+            _service.UploadFile(Path.Combine(docPath, FILENAME), CONTENT_TYPE);
         }
 
         // load shapes data
         public void LoadShapes()
         {
-            Console.WriteLine("LoadShapes");
+            string docPath = Directory.GetCurrentDirectory();
+            if (_service == null)
+                _service = new GoogleDriveService(APPLICATION_NAME, Path.Combine(docPath, CLIENT_SECRET_FILENAME));
+
+            Google.Apis.Drive.v2.Data.File shapesFile = null;
+            foreach (var file in _service.ListRootFileAndFolder())
+                if (file.Title == FILENAME)
+                    shapesFile = file;
+
+            _service.DownloadFile(shapesFile, docPath);
+
+            string[] rows = File.ReadAllLines(Path.Combine(docPath, FILENAME));
+
             _shapes.Clear();
             _commandManager.Clear();
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Shapes.txt";
-            string[] rows = File.ReadAllLines(path);
+
             foreach (string row in rows)
             {
                 string[] data = row.Split(' ');
