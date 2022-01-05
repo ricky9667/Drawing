@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DrawingModel
 {
@@ -316,6 +318,70 @@ namespace DrawingModel
 
             if (_selectedShapeIndex != -1)
                 _shapes[_selectedShapeIndex].DrawSelection(graphics);
+        }
+
+        // save shapes image and data
+        public void SaveShapes()
+        {
+            const string filename = "Shapes.txt";
+
+            // Set a variable to the Documents path.
+            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, filename)))
+            {
+                foreach (IShape shape in _shapes)
+                {
+                    string shapeData;
+                    if (shape.ShapeType == ShapeType.LINE)
+                    {
+                        Line line = shape as Line;
+                        int firstIndex = _shapes.IndexOf(line.FirstShape);
+                        int secondIndex = _shapes.IndexOf(line.SecondShape);
+                        shapeData = string.Format("{0} {1} {2}", line.ShapeType.ToString(), firstIndex, secondIndex);
+                    }
+                    else
+                    {
+                        shapeData = string.Format("{0} {1} {2} {3} {4}", shape.ShapeType.ToString(), shape.X1, shape.Y1, shape.X2, shape.Y2);
+                    }
+                    outputFile.WriteLine(shapeData);
+                    Console.WriteLine(shape.ShapeType + " is saved to file");
+                }
+            }
+        }
+
+        // load shapes data
+        public void LoadShapes()
+        {
+            Console.WriteLine("LoadShapes");
+            _shapes.Clear();
+            _commandManager.Clear();
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Shapes.txt";
+            string[] rows = File.ReadAllLines(path);
+            foreach (string row in rows)
+            {
+                string[] data = row.Split(' ');
+                Console.WriteLine(row);
+                IShape shape = ShapeFactory.CreateShape(data[0]);
+                if (shape.ShapeType == ShapeType.LINE)
+                {
+                    Line line = shape as Line;
+                    int firstIndex = int.Parse(data[1]);
+                    int secondIndex = int.Parse(data[2]);
+                    line.FirstShape = _shapes[firstIndex];
+                    line.SecondShape = _shapes[secondIndex];
+                    line.UpdateSavedPosition();
+                    _shapes.Add(line);
+                }
+                else
+                {
+                    shape.X1 = int.Parse(data[1]);
+                    shape.Y1 = int.Parse(data[2]);
+                    shape.X2 = int.Parse(data[3]);
+                    shape.Y2 = int.Parse(data[4]);
+                    _shapes.Add(shape);
+                }
+            }
         }
 
         // notify observers

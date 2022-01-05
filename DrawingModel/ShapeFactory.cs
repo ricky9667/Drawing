@@ -28,5 +28,22 @@ namespace DrawingModel
                     throw new Exception(MESSAGE);
             }
         }
+
+        // use factory pattern to create shape instance
+        public static IShape CreateShape(string shapeName)
+        {
+            switch (shapeName)
+            {
+                case "LINE":
+                    return new Line();
+                case "RECTANGLE":
+                    return new Rectangle();
+                case "ELLIPSE":
+                    return new Ellipse();
+                default:
+                    const string MESSAGE = "ShapeType is null or does not exist.";
+                    throw new Exception(MESSAGE);
+            }
+        }
     }
 }

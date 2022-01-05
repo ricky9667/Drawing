@@ -41,6 +41,8 @@ namespace DrawingForm
             _rectangleButton.Click += HandleRectangleButtonClick;
             _ellipseButton.Click += HandleEllipseButtonClick;
             _clearButton.Click += HandleClearButtonClick;
+            _saveButton.Click += HandleSaveButtonClick;
+            _loadButton.Click += HandleLoadButtonClick;
         }
 
         // undo last command
@@ -91,6 +93,19 @@ namespace DrawingForm
             _lineButton.Enabled = true;
             _rectangleButton.Enabled = true;
             _ellipseButton.Enabled = true;
+        }
+
+        // save shapes
+        private void HandleSaveButtonClick(object sender, EventArgs e)
+        {
+            _model.SaveShapes();
+        }
+
+        // load shapes
+        private void HandleLoadButtonClick(object sender, EventArgs e)
+        {
+            _model.LoadShapes();
+            HandleModelChanged();
         }
 
         // event when canvas is pressed

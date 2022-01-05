@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Threading.Tasks;
 
 namespace DrawingModel.Tests
 {
@@ -289,6 +291,22 @@ namespace DrawingModel.Tests
             model.HandlePointerPressed(17, 7);
             model.HandlePointerMoved(37, 64);
             Assert.IsTrue(isChanged);
+        }
+
+        // test
+        [TestMethod()]
+        public void SaveShapesTest()
+        {
+            DrawShapeFake(ShapeType.RECTANGLE, 100, 100, 200, 200);
+            DrawShapeFake(ShapeType.ELLIPSE, 100, 300, 200, 400);
+            DrawShapeFake(ShapeType.LINE, 150, 150, 150, 350);
+            model.SaveShapes();
+            model.LoadShapes();
+            
+            foreach (IShape shape in model.Shapes)
+            {
+                Console.WriteLine(shape.ShapeInfo);
+            }
         }
 
         // draw shape to model

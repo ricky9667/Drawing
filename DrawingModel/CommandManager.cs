@@ -44,6 +44,13 @@ namespace DrawingModel
             _undoCommands.Push(command);
         }
 
+        // clear commands
+        public void Clear()
+        {
+            _undoCommands.Clear();
+            _redoCommands.Clear();
+        }
+
         public bool CanUndo
         {
             get

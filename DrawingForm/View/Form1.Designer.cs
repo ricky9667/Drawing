@@ -36,12 +36,16 @@ namespace DrawingForm
             this._ellipseButton = new System.Windows.Forms.Button();
             this._lineButton = new System.Windows.Forms.Button();
             this._clearButton = new System.Windows.Forms.Button();
+            this._saveButton = new System.Windows.Forms.Button();
+            this._loadButton = new System.Windows.Forms.Button();
             this._canvas.SuspendLayout();
             this.SuspendLayout();
             // 
             // _canvas
             // 
             this._canvas.BackColor = System.Drawing.Color.LightYellow;
+            this._canvas.Controls.Add(this._loadButton);
+            this._canvas.Controls.Add(this._saveButton);
             this._canvas.Controls.Add(this._selectionLabel);
             this._canvas.Controls.Add(this._actionsToolStrip);
             this._canvas.Controls.Add(this._rectangleButton);
@@ -68,33 +72,33 @@ namespace DrawingForm
             this._actionsToolStrip.ImageScalingSize = new System.Drawing.Size(32, 32);
             this._actionsToolStrip.Location = new System.Drawing.Point(0, 0);
             this._actionsToolStrip.Name = "_actionsToolStrip";
-            this._actionsToolStrip.Size = new System.Drawing.Size(1340, 50);
+            this._actionsToolStrip.Size = new System.Drawing.Size(1340, 25);
             this._actionsToolStrip.TabIndex = 3;
             this._actionsToolStrip.Text = "toolStrip1";
             // 
             // _rectangleButton
             // 
-            this._rectangleButton.Location = new System.Drawing.Point(397, 60);
+            this._rectangleButton.Location = new System.Drawing.Point(243, 60);
             this._rectangleButton.Name = "_rectangleButton";
-            this._rectangleButton.Size = new System.Drawing.Size(240, 60);
+            this._rectangleButton.Size = new System.Drawing.Size(200, 60);
             this._rectangleButton.TabIndex = 1;
             this._rectangleButton.Text = "Rectangle";
             this._rectangleButton.UseVisualStyleBackColor = true;
             // 
             // _ellipseButton
             // 
-            this._ellipseButton.Location = new System.Drawing.Point(707, 60);
+            this._ellipseButton.Location = new System.Drawing.Point(461, 60);
             this._ellipseButton.Name = "_ellipseButton";
-            this._ellipseButton.Size = new System.Drawing.Size(240, 60);
+            this._ellipseButton.Size = new System.Drawing.Size(200, 60);
             this._ellipseButton.TabIndex = 2;
             this._ellipseButton.Text = "Ellipse";
             this._ellipseButton.UseVisualStyleBackColor = true;
             // 
             // _lineButton
             // 
-            this._lineButton.Location = new System.Drawing.Point(89, 60);
+            this._lineButton.Location = new System.Drawing.Point(28, 60);
             this._lineButton.Name = "_lineButton";
-            this._lineButton.Size = new System.Drawing.Size(240, 60);
+            this._lineButton.Size = new System.Drawing.Size(200, 60);
             this._lineButton.TabIndex = 0;
             this._lineButton.Text = "Line";
             this._lineButton.UseVisualStyleBackColor = true;
@@ -102,12 +106,30 @@ namespace DrawingForm
             // 
             // _clearButton
             // 
-            this._clearButton.Location = new System.Drawing.Point(1019, 60);
+            this._clearButton.Location = new System.Drawing.Point(681, 60);
             this._clearButton.Name = "_clearButton";
-            this._clearButton.Size = new System.Drawing.Size(240, 60);
+            this._clearButton.Size = new System.Drawing.Size(200, 60);
             this._clearButton.TabIndex = 0;
             this._clearButton.Text = "Clear";
             this._clearButton.UseVisualStyleBackColor = true;
+            // 
+            // _saveButton
+            // 
+            this._saveButton.Location = new System.Drawing.Point(897, 60);
+            this._saveButton.Name = "_saveButton";
+            this._saveButton.Size = new System.Drawing.Size(200, 60);
+            this._saveButton.TabIndex = 5;
+            this._saveButton.Text = "Save";
+            this._saveButton.UseVisualStyleBackColor = true;
+            // 
+            // _loadButton
+            // 
+            this._loadButton.Location = new System.Drawing.Point(1113, 60);
+            this._loadButton.Name = "_loadButton";
+            this._loadButton.Size = new System.Drawing.Size(200, 60);
+            this._loadButton.TabIndex = 6;
+            this._loadButton.Text = "Load";
+            this._loadButton.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -132,6 +154,8 @@ namespace DrawingForm
         private DoubleBufferedPanel _canvas;
         private System.Windows.Forms.ToolStrip _actionsToolStrip;
         private System.Windows.Forms.Label _selectionLabel;
+        private System.Windows.Forms.Button _saveButton;
+        private System.Windows.Forms.Button _loadButton;
     }
 }
 
