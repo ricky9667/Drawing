@@ -137,6 +137,9 @@
     <Compile Include="..\DrawingModel\Ellipse.cs">
       <Link>Model\Ellipse.cs</Link>
     </Compile>
+    <Compile Include="..\DrawingModel\GoogleDriveService.cs">
+      <Link>Model\GoogleDriveService.cs</Link>
+    </Compile>
     <Compile Include="..\DrawingModel\ICommand.cs">
       <Link>Model\ICommand.cs</Link>
     </Compile>
@@ -203,9 +206,21 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Google.Apis.Drive.v2">
+      <Version>1.55.0.2530</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.12</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\DrawingModel\clientSecret.json">
+      <Link>Model\clientSecret.json</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

@@ -18,7 +18,7 @@ namespace DrawingModel
 {
     public class GoogleDriveService
     {
-        private static readonly string[] SCOPES = new[] { DriveService.Scope.DriveFile, DriveService.Scope.Drive };
+        private static readonly string[] _scopes = new[] { DriveService.Scope.DriveFile, DriveService.Scope.Drive };
         private DriveService _service;
         private const int KB = 0x400;
         private const int DOWNLOAD_CHUNK_SIZE = 256 * KB;
@@ -40,24 +40,20 @@ namespace DrawingModel
         {
             const string USER = "user";
             const string CREDENTIAL_FOLDER = ".credential/";
-            UserCredential credential;
 
             using (FileStream stream = new FileStream(clientSecretFileName, FileMode.Open, FileAccess.Read))
             {
                 string credentialPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
                 credentialPath = Path.Combine(credentialPath, CREDENTIAL_FOLDER + applicationName);
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(GoogleClientSecrets.Load(stream).Secrets, SCOPES, USER, CancellationToken.None, new FileDataStore(credentialPath, true)).Result;
+                _credential = GoogleWebAuthorizationBroker.AuthorizeAsync(GoogleClientSecrets.Load(stream).Secrets, _scopes, USER, CancellationToken.None, new FileDataStore(credentialPath, true)).Result;
             }
-
-            DriveService service = new DriveService(new BaseClientService.Initializer()
+            
+            _timeStamp = UNIXNowTimeStamp;
+            _service = new DriveService(new BaseClientService.Initializer()
             {
-                HttpClientInitializer = credential,
+                HttpClientInitializer = _credential,
                 ApplicationName = applicationName
             });
-
-            _credential = credential;
-            _timeStamp = UNIXNowTimeStamp;
-            _service = service;
         }
 
         private int UNIXNowTimeStamp
@@ -107,46 +103,51 @@ namespace DrawingModel
             listRequest.Q = queryString;
             do
             {
-                try
-                {
-                    FileList fileList = listRequest.Execute();
-                    returnList.AddRange(fileList.Items);
-                    listRequest.PageToken = fileList.NextPageToken;
-                }
-                catch (Exception exception)
-                {
-                    listRequest.PageToken = null;
-                    throw exception;
-                }
+                returnList.AddRange(GetFileListItems(listRequest));
             } while (!String.IsNullOrEmpty(listRequest.PageToken));
 
             return returnList;
         }
 
+        // get filelist items
+        private List<Google.Apis.Drive.v2.Data.File> GetFileListItems(FilesResource.ListRequest listRequest)
+        {
+            List<Google.Apis.Drive.v2.Data.File> returnList = new List<Google.Apis.Drive.v2.Data.File>();
+            try
+            {
+                FileList fileList = listRequest.Execute();
+                returnList.AddRange(fileList.Items);
+                listRequest.PageToken = fileList.NextPageToken;
+            }
+            catch (Exception exception)
+            {
+                listRequest.PageToken = null;
+                throw exception;
+            }
+            return returnList;
+        }
+
         // upload
-        public Google.Apis.Drive.v2.Data.File UploadFile(string uploadFileName, string contentType, Action<IUploadProgress> uploadProgressEventHandeler = null, Action<Google.Apis.Drive.v2.Data.File> responseReceivedEventHandler = null)
+        public Google.Apis.Drive.v2.Data.File UploadFile(string uploadFileName, string contentType, Action<IUploadProgress> uploadProgressEventHandler = null, Action<Google.Apis.Drive.v2.Data.File> responseReceivedEventHandler = null)
         {
             FileStream uploadStream = new FileStream(uploadFileName, FileMode.Open, FileAccess.Read);
             const char SPLASH = '\\';
-            string title = "";
+            CheckCredentialTimeStamp();
 
-            this.CheckCredentialTimeStamp();
-            if (uploadFileName.LastIndexOf(SPLASH) != -1)
-                title = uploadFileName.Substring(uploadFileName.LastIndexOf(SPLASH) + 1);
-            else
-                title = uploadFileName;
-
-            Google.Apis.Drive.v2.Data.File fileToInsert = new Google.Apis.Drive.v2.Data.File { Title = title };
+            Google.Apis.Drive.v2.Data.File fileToInsert = new Google.Apis.Drive.v2.Data.File();
+            fileToInsert.Title = (uploadFileName.LastIndexOf(SPLASH) != -1) ? uploadFileName.Substring(uploadFileName.LastIndexOf(SPLASH) + 1) : uploadFileName;
             FilesResource.InsertMediaUpload insertRequest = _service.Files.Insert(fileToInsert, uploadStream, contentType);
-            insertRequest.ChunkSize = FilesResource.InsertMediaUpload.MinimumChunkSize * 2;
-
-            if (uploadProgressEventHandeler != null)
-                insertRequest.ProgressChanged += uploadProgressEventHandeler;
-
-
+            insertRequest.ChunkSize = FilesResource.InsertMediaUpload.MinimumChunkSize + FilesResource.InsertMediaUpload.MinimumChunkSize;
+            if (uploadProgressEventHandler != null)
+                insertRequest.ProgressChanged += uploadProgressEventHandler;
             if (responseReceivedEventHandler != null)
                 insertRequest.ResponseReceived += responseReceivedEventHandler;
+            return MakeUploadRequest(insertRequest, uploadStream);
+        }
 
+        // run upload request
+        private Google.Apis.Drive.v2.Data.File MakeUploadRequest(FilesResource.InsertMediaUpload insertRequest, FileStream uploadStream)
+        {
             try
             {
                 insertRequest.Upload();
@@ -164,7 +165,7 @@ namespace DrawingModel
         }
 
         // download
-        public void DownloadFile(Google.Apis.Drive.v2.Data.File fileToDownload, string downloadPath, Action<IDownloadProgress> downloadProgressChangedEventHandeler = null)
+        public void DownloadFile(Google.Apis.Drive.v2.Data.File fileToDownload, string downloadPath, Action<IDownloadProgress> downloadProgressChangedEventHandler = null)
         {
             const string SPLASH = @"\";
 
