@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using DrawingModel;
 
@@ -96,16 +97,35 @@ namespace DrawingForm
         }
 
         // save shapes
-        private void HandleSaveButtonClick(object sender, EventArgs e)
+        async private void HandleSaveButtonClick(object sender, EventArgs e)
         {
-            _model.SaveShapes();
+            await Task.Factory.StartNew(() =>
+            {
+                _model.SaveShapes();
+            });
         }
 
         // load shapes
         private void HandleLoadButtonClick(object sender, EventArgs e)
         {
+            SetScreenEnabled(false);
             _model.LoadShapes();
             HandleModelChanged();
+            SetScreenEnabled(true);
+        }
+
+        // set components enabled
+        private void SetScreenEnabled(bool flag)
+        {
+            _canvas.Enabled = flag;
+            _lineButton.Enabled = flag;
+            _rectangleButton.Enabled = flag;
+            _ellipseButton.Enabled = flag;
+            _clearButton.Enabled = flag;
+            _saveButton.Enabled = flag;
+            _loadButton.Enabled = flag;
+            _undoToolStripButton.Enabled = flag;
+            _redoToolStripButton.Enabled = flag;
         }
 
         // event when canvas is pressed

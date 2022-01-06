@@ -11,11 +11,8 @@ namespace DrawingModel
         public event ModelChangedEventHandler _modelChanged;
         public delegate void ModelChangedEventHandler();
 
-        private const string APPLICATION_NAME = "Drawing";
-        private const string CLIENT_SECRET_FILENAME = "clientSecret.json";
         private const string FILENAME = "Shapes.txt";
-        private readonly string _shapesFile = Path.Combine(Directory.GetCurrentDirectory(), "Shapes.txt");
-        private readonly string _clientSecretFile = Path.Combine(Directory.GetCurrentDirectory(), "clientSecret.json");
+        private readonly string _filePath = Path.Combine(Directory.GetCurrentDirectory(), FILENAME);
         private double _firstPointX;
         private double _firstPointY;
         private int _firstClickedShapeIndex;
@@ -110,6 +107,16 @@ namespace DrawingModel
                 const string SELECTED = "Selected : ";
                 return (_selectedShapeIndex == -1) ? "" : SELECTED + _shapes[_selectedShapeIndex].ShapeInfo;
             }
+        }
+
+        // init google drive service
+        private void InitGoogleDriveService()
+        {
+            const string APPLICATION_NAME = "Drawing";
+            string clientSecret = Path.Combine(Directory.GetCurrentDirectory(), "clientSecret.json");
+        
+            if (_service == null)
+                _service = new GoogleDriveService(APPLICATION_NAME, clientSecret);
         }
 
         // set current drawing shape and hint shape
@@ -324,7 +331,11 @@ namespace DrawingModel
         // save shapes image and data
         public void SaveShapes()
         {
-            using (StreamWriter outputFile = new StreamWriter(_shapesFile))
+            //if (!Directory.Exists(_filePath))
+            //    return;
+
+            //Directory.Delete(_filePath);
+            using (StreamWriter outputFile = new StreamWriter(_filePath))
             {
                 foreach (IShape shape in _shapes)
                 {
@@ -344,30 +355,29 @@ namespace DrawingModel
                 }
             }
 
-            if (_service == null)
-                _service = new GoogleDriveService(APPLICATION_NAME, _clientSecretFile);
+            UploadLocalFile();
+        }
+
+        // upload shapes data to google drive
+        private void UploadLocalFile()
+        {
+            InitGoogleDriveService();
+            List<Google.Apis.Drive.v2.Data.File> files = _service.ListRootFileAndFolder();
+            int fileIndex = files.FindIndex(item => item.Title == FILENAME);
+            if (fileIndex > -1)
+                _service.DeleteFile(files[fileIndex].Id);
             const string CONTENT_TYPE = "text/txt";
-            _service.UploadFile(_shapesFile, CONTENT_TYPE);
+            _service.UploadFile(_filePath, CONTENT_TYPE);
         }
 
         // load shapes data
         public void LoadShapes()
         {
-            if (_service == null)
-                _service = new GoogleDriveService(APPLICATION_NAME, _clientSecretFile);
-
-            Google.Apis.Drive.v2.Data.File shapesFile = null;
-            foreach (var file in _service.ListRootFileAndFolder())
-                if (file.Title == FILENAME)
-                    shapesFile = file;
-
-            _service.DownloadFile(shapesFile, Directory.GetCurrentDirectory());
-
-            string[] rows = File.ReadAllLines(_shapesFile);
-
             _shapes.Clear();
             _commandManager.Clear();
+            DownloadLocalFile();
 
+            string[] rows = File.ReadAllLines(_filePath);
             foreach (string row in rows)
             {
                 string[] data = row.Split(' ');
@@ -385,7 +395,17 @@ namespace DrawingModel
                     _shapes.Add(shape);
                 }
             }
-            Console.WriteLine("shapes count : " + _shapes.Count);
+        }
+        
+        // load shapes from google drive
+        public void DownloadLocalFile()
+        {
+            InitGoogleDriveService();
+            List<Google.Apis.Drive.v2.Data.File> files = _service.ListRootFileAndFolder();
+            int fileIndex = files.FindIndex(item => item.Title == FILENAME);
+            if (fileIndex == -1)
+                return;
+            _service.DownloadFile(files[fileIndex], Directory.GetCurrentDirectory());
         }
 
         // notify observers
