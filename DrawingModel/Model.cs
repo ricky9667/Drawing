@@ -14,6 +14,8 @@ namespace DrawingModel
         private const string APPLICATION_NAME = "Drawing";
         private const string CLIENT_SECRET_FILENAME = "clientSecret.json";
         private const string FILENAME = "Shapes.txt";
+        private readonly string _shapesFile = Path.Combine(Directory.GetCurrentDirectory(), "Shapes.txt");
+        private readonly string _clientSecretFile = Path.Combine(Directory.GetCurrentDirectory(), "clientSecret.json");
         private double _firstPointX;
         private double _firstPointY;
         private int _firstClickedShapeIndex;
@@ -113,7 +115,7 @@ namespace DrawingModel
         // set current drawing shape and hint shape
         public void SetDrawingShape(ShapeType shapeType)
         {
-            _hint = ShapeFactory.CreateShape(shapeType);
+            _hint = ShapeFactory.CreateEmptyShape(shapeType);
             _currentState = CreateStateInstance(shapeType);
         }
 
@@ -272,12 +274,8 @@ namespace DrawingModel
             if (Math.Abs((_firstPointX - posX) * (_firstPointY - posY)) < MIN_AREA) // avoid shapes that are too small
                 return;
 
-            IShape hint = ShapeFactory.CreateShape(_currentState.DrawingShape);
-            hint.X1 = Math.Min(_firstPointX, posX);
-            hint.Y1 = Math.Min(_firstPointY, posY);
-            hint.X2 = Math.Max(_firstPointX, posX);
-            hint.Y2 = Math.Max(_firstPointY, posY);
-            hint.UpdateSavedPosition();
+            IShape hint = ShapeFactory.CreateEmptyShape(_currentState.DrawingShape);
+            hint.SetShapeCoordinates(_firstPointX, _firstPointY, posX, posY);
             _commandManager.RunCommand(new DrawCommand(this, hint));
         }
 
@@ -326,10 +324,7 @@ namespace DrawingModel
         // save shapes image and data
         public void SaveShapes()
         {
-            string docPath = Directory.GetCurrentDirectory();
-            Console.WriteLine("Save directory: " + docPath);
-
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, FILENAME)))
+            using (StreamWriter outputFile = new StreamWriter(_shapesFile))
             {
                 foreach (IShape shape in _shapes)
                 {
@@ -346,31 +341,29 @@ namespace DrawingModel
                         shapeData = string.Format("{0} {1} {2} {3} {4}", shape.ShapeType.ToString(), shape.X1, shape.Y1, shape.X2, shape.Y2);
                     }
                     outputFile.WriteLine(shapeData);
-                    Console.WriteLine(shape.ShapeType + " is saved to file");
                 }
             }
 
             if (_service == null)
-                _service = new GoogleDriveService(APPLICATION_NAME, Path.Combine(docPath, CLIENT_SECRET_FILENAME));
+                _service = new GoogleDriveService(APPLICATION_NAME, _clientSecretFile);
             const string CONTENT_TYPE = "text/txt";
-            _service.UploadFile(Path.Combine(docPath, FILENAME), CONTENT_TYPE);
+            _service.UploadFile(_shapesFile, CONTENT_TYPE);
         }
 
         // load shapes data
         public void LoadShapes()
         {
-            string docPath = Directory.GetCurrentDirectory();
             if (_service == null)
-                _service = new GoogleDriveService(APPLICATION_NAME, Path.Combine(docPath, CLIENT_SECRET_FILENAME));
+                _service = new GoogleDriveService(APPLICATION_NAME, _clientSecretFile);
 
             Google.Apis.Drive.v2.Data.File shapesFile = null;
             foreach (var file in _service.ListRootFileAndFolder())
                 if (file.Title == FILENAME)
                     shapesFile = file;
 
-            _service.DownloadFile(shapesFile, docPath);
+            _service.DownloadFile(shapesFile, Directory.GetCurrentDirectory());
 
-            string[] rows = File.ReadAllLines(Path.Combine(docPath, FILENAME));
+            string[] rows = File.ReadAllLines(_shapesFile);
 
             _shapes.Clear();
             _commandManager.Clear();
@@ -379,26 +372,20 @@ namespace DrawingModel
             {
                 string[] data = row.Split(' ');
                 Console.WriteLine(row);
-                IShape shape = ShapeFactory.CreateShape(data[0]);
+                IShape shape = ShapeFactory.CreateEmptyShape(data[0]);
                 if (shape.ShapeType == ShapeType.LINE)
                 {
                     Line line = shape as Line;
-                    int firstIndex = int.Parse(data[1]);
-                    int secondIndex = int.Parse(data[2]);
-                    line.FirstShape = _shapes[firstIndex];
-                    line.SecondShape = _shapes[secondIndex];
-                    line.UpdateSavedPosition();
+                    line.SetReferenceShapes(_shapes[int.Parse(data[1])], _shapes[int.Parse(data[2])]);
                     _shapes.Add(line);
                 }
                 else
                 {
-                    shape.X1 = int.Parse(data[1]);
-                    shape.Y1 = int.Parse(data[2]);
-                    shape.X2 = int.Parse(data[3]);
-                    shape.Y2 = int.Parse(data[4]);
+                    shape.SetShapeCoordinates(int.Parse(data[1]), int.Parse(data[2]), int.Parse(data[3]), int.Parse(data[4]));
                     _shapes.Add(shape);
                 }
             }
+            Console.WriteLine("shapes count : " + _shapes.Count);
         }
 
         // notify observers

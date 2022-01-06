@@ -73,6 +73,16 @@ namespace DrawingModel
             graphics.DrawSelection(X1, Y1, X2, Y2);
         }
 
+        // set shape coordinates
+        public void SetShapeCoordinates(double x1, double y1, double x2, double y2)
+        {
+            X1 = Math.Min(x1, x2);
+            Y1 = Math.Min(y1, y2);
+            X2 = Math.Max(x1, x2);
+            Y2 = Math.Max(y1, y2);
+            UpdateSavedPosition();
+        }
+
         // update coordinates to saved position
         public void UpdateSavedPosition()
         {

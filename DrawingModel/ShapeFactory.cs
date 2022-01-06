@@ -12,8 +12,8 @@ namespace DrawingModel
 
     public class ShapeFactory
     {
-        // use factory pattern to create shape instance
-        public static IShape CreateShape(ShapeType shapeType)
+        // create shape instance by shapeType
+        public static IShape CreateEmptyShape(ShapeType shapeType)
         {
             switch (shapeType)
             {
@@ -29,8 +29,8 @@ namespace DrawingModel
             }
         }
 
-        // use factory pattern to create shape instance
-        public static IShape CreateShape(string shapeName)
+        // create shape instance by shapeName
+        public static IShape CreateEmptyShape(string shapeName)
         {
             switch (shapeName)
             {

@@ -48,6 +48,9 @@
         // draw shape selection on canvas
         void DrawSelection(IGraphics graphics);
 
+        // set shape coordinates
+        void SetShapeCoordinates(double x1, double y1, double x2, double y2);
+
         // update coordinates to saved position
         void UpdateSavedPosition();
 
