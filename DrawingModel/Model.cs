@@ -10,9 +10,9 @@ namespace DrawingModel
         public event ModelChangedEventHandler _modelChanged;
         public delegate void ModelChangedEventHandler();
 
-        private const char SPACE = ' ';
-        private const string FILE_NAME = "Shapes.txt";
-        private readonly string _filePath = Path.Combine(Directory.GetCurrentDirectory(), FILE_NAME);
+        //private const char SPACE = ' ';
+        //private const string FILE_NAME = "Shapes.txt";
+        //private readonly string _filePath = Path.Combine(Directory.GetCurrentDirectory(), FILE_NAME);
         private double _firstPointX;
         private double _firstPointY;
         private int _firstClickedShapeIndex;
@@ -22,10 +22,11 @@ namespace DrawingModel
         private IState _currentState = null;
         private readonly List<IShape> _shapes = new List<IShape>();
         private readonly CommandManager _commandManager = new CommandManager();
-        private GoogleDriveService _service = null;
+        private readonly FileHandler _fileHandler;
         public Model()
         {
             _currentState = new PointerState(this);
+            _fileHandler = new FileHandler(this);
         }
 
         public double FirstPointX
@@ -110,36 +111,20 @@ namespace DrawingModel
         }
 
         // init google drive service
-        private void SetUpGoogleDriveService()
-        {
-            const string APPLICATION_NAME = "Drawing";
-            const string CLIENT_SECRET_FILE_NAME = "clientSecret.json";
-            string clientSecret = Path.Combine(Directory.GetCurrentDirectory(), CLIENT_SECRET_FILE_NAME);
-            if (_service == null)
-                _service = new GoogleDriveService(APPLICATION_NAME, clientSecret);
-        }
+        //private void SetUpGoogleDriveService()
+        //{
+        //    const string APPLICATION_NAME = "Drawing";
+        //    const string CLIENT_SECRET_FILE_NAME = "clientSecret.json";
+        //    string clientSecret = Path.Combine(Directory.GetCurrentDirectory(), CLIENT_SECRET_FILE_NAME);
+        //    if (_service == null)
+        //        _service = new GoogleDriveService(APPLICATION_NAME, clientSecret);
+        //}
 
         // set current drawing shape and hint shape
         public void SetDrawingShape(ShapeType shapeType)
         {
-            _hint = ShapeFactory.CreateEmptyShape(shapeType);
-            _currentState = CreateStateInstance(shapeType);
-        }
-
-        // create state instance
-        private IState CreateStateInstance(ShapeType shapeType)
-        {
-            switch (shapeType)
-            {
-                case ShapeType.LINE:
-                    return new DrawingLineState(this);
-                case ShapeType.RECTANGLE:
-                    return new DrawingRectangleState(this);
-                case ShapeType.ELLIPSE:
-                    return new DrawingEllipseState(this);
-                default:
-                    return new PointerState(this);
-            }
+            _hint = ShapeFactory.CreateShape(shapeType);
+            _currentState = StateFactory.CreateState(this, shapeType);
         }
 
         // record first point coordinates on pointer pressed
@@ -281,7 +266,7 @@ namespace DrawingModel
             if (Math.Abs((_firstPointX - posX) * (_firstPointY - posY)) < MIN_AREA) // avoid shapes that are too small
                 return;
 
-            IShape hint = ShapeFactory.CreateEmptyShape(_currentState.DrawingShape);
+            IShape hint = ShapeFactory.CreateShape(_currentState.DrawingShape);
             hint.SetShapeCoordinates(_firstPointX, _firstPointY, posX, posY);
             _commandManager.RunCommand(new DrawCommand(this, hint));
         }
@@ -328,73 +313,17 @@ namespace DrawingModel
         // save shapes image and data
         public void SaveShapes()
         {
-            using (StreamWriter outputFile = new StreamWriter(_filePath))
-            {
-                foreach (IShape shape in _shapes)
-                {
-                    if (shape.ShapeType == ShapeType.LINE)
-                    {
-                        Line line = shape as Line;
-                        outputFile.WriteLine(line.ShapeType.ToString() + SPACE + _shapes.IndexOf(line.FirstShape) + SPACE + _shapes.IndexOf(line.SecondShape));
-                    }
-                    else
-                    {
-                        outputFile.WriteLine(shape.ShapeType.ToString() + SPACE + shape.X1 + SPACE + shape.Y1 + SPACE + shape.X2 + SPACE + shape.Y2);
-                    }
-                }
-            }
-
-            UploadLocalFile();
-        }
-
-        // upload shapes data to google drive
-        private void UploadLocalFile()
-        {
-            SetUpGoogleDriveService();
-            List<Google.Apis.Drive.v2.Data.File> files = _service.ListRootFileAndFolder();
-            int fileIndex = files.FindIndex(item => item.Title == FILE_NAME);
-            if (fileIndex > -1)
-                _service.DeleteFile(files[fileIndex].Id);
-            const string CONTENT_TYPE = "text/txt";
-            _service.UploadFile(_filePath, CONTENT_TYPE);
+            _fileHandler.SaveShapesToLocal();
+            _fileHandler.UploadShapesFile();
         }
 
         // load shapes data
         public void LoadShapes()
         {
-            _shapes.Clear();
+            _fileHandler.DownloadShapesFile();
+            _fileHandler.LoadShapesFromLocal();
             _commandManager.Clear();
-            DownloadLocalFile();
-
-            string[] rows = File.ReadAllLines(_filePath);
-            foreach (string row in rows)
-            {
-                string[] data = row.Split(SPACE);
-                Console.WriteLine(row);
-                IShape shape = ShapeFactory.CreateEmptyShape(data[0]);
-                if (shape.ShapeType == ShapeType.LINE)
-                {
-                    Line line = shape as Line;
-                    line.SetReferenceShapes(_shapes[int.Parse(data[1])], _shapes[int.Parse(data[2])]);
-                    _shapes.Add(line);
-                }
-                else
-                {
-                    shape.SetShapeCoordinates(int.Parse(data[1]), int.Parse(data[2]), int.Parse(data[3]), int.Parse(data[4]));
-                    _shapes.Add(shape);
-                }
-            }
-        }
-        
-        // load shapes from google drive
-        public void DownloadLocalFile()
-        {
-            SetUpGoogleDriveService();
-            List<Google.Apis.Drive.v2.Data.File> files = _service.ListRootFileAndFolder();
-            int fileIndex = files.FindIndex(item => item.Title == FILE_NAME);
-            if (fileIndex == -1)
-                return;
-            _service.DownloadFile(files[fileIndex], Directory.GetCurrentDirectory());
+            NotifyModelChanged();
         }
 
         // notify observers

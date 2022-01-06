@@ -13,7 +13,7 @@ namespace DrawingModel
     public class ShapeFactory
     {
         // create shape instance by shapeType
-        public static IShape CreateEmptyShape(ShapeType shapeType)
+        public static IShape CreateShape(ShapeType shapeType)
         {
             switch (shapeType)
             {
@@ -30,7 +30,7 @@ namespace DrawingModel
         }
 
         // create shape instance by shapeName
-        public static IShape CreateEmptyShape(string shapeName)
+        public static IShape CreateShape(string shapeName)
         {
             switch (shapeName)
             {

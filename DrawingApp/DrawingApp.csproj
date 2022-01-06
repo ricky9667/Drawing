@@ -137,6 +137,9 @@
     <Compile Include="..\DrawingModel\Ellipse.cs">
       <Link>Model\Ellipse.cs</Link>
     </Compile>
+    <Compile Include="..\DrawingModel\FileHandler.cs">
+      <Link>Model\FileHandler.cs</Link>
+    </Compile>
     <Compile Include="..\DrawingModel\GoogleDriveService.cs">
       <Link>Model\GoogleDriveService.cs</Link>
     </Compile>
@@ -169,6 +172,9 @@
     </Compile>
     <Compile Include="..\DrawingModel\ShapeFactory.cs">
       <Link>Model\ShapeFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\DrawingModel\StateFactory.cs">
+      <Link>Model\StateFactory.cs</Link>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

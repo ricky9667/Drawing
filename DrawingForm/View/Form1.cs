@@ -109,6 +109,8 @@ namespace DrawingForm
         private void HandleLoadButtonClick(object sender, EventArgs e)
         {
             SetScreenEnabled(false);
+            _undoToolStripButton.Enabled = false;
+            _redoToolStripButton.Enabled = false;
             _model.LoadShapes();
             HandleModelChanged();
             SetScreenEnabled(true);
@@ -124,8 +126,6 @@ namespace DrawingForm
             _clearButton.Enabled = flag;
             _saveButton.Enabled = flag;
             _loadButton.Enabled = flag;
-            _undoToolStripButton.Enabled = flag;
-            _redoToolStripButton.Enabled = flag;
         }
 
         // event when canvas is pressed
