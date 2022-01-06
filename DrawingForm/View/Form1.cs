@@ -97,7 +97,7 @@ namespace DrawingForm
         }
 
         // save shapes
-        async private void HandleSaveButtonClick(object sender, EventArgs e)
+        private async void HandleSaveButtonClick(object sender, EventArgs e)
         {
             await Task.Factory.StartNew(() =>
             {

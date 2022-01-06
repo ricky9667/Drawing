@@ -4,6 +4,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using DrawingModel;
 using Windows.UI.ViewManagement;
+using System.Threading.Tasks;
+using Windows.UI.Popups;
+using System;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -103,16 +106,35 @@ namespace DrawingApp
         }
 
         // save shapes
-        private void HandleSaveButtonClick(object sender, RoutedEventArgs e)
+        private async void HandleSaveButtonClick(object sender, RoutedEventArgs e)
         {
-            _model.SaveShapes();
+            await Task.Factory.StartNew(() =>
+            {
+                _model.SaveShapes();
+            });
         }
 
         // load shapes
         private void HandleLoadButtonClick(object sender, RoutedEventArgs e)
         {
+            SetScreenEnabled(false);
+            _undoButton.IsEnabled = false;
+            _redoButton.IsEnabled = false;
             _model.LoadShapes();
             HandleModelChanged();
+            SetScreenEnabled(true);
+        }
+
+        // set components enabled
+        private void SetScreenEnabled(bool flag)
+        {
+            _canvas.IsTapEnabled = _canvas.IsHoldingEnabled = flag;
+            _lineButton.IsEnabled = flag;
+            _rectangleButton.IsEnabled = flag;
+            _ellipseButton.IsEnabled = flag;
+            _clearButton.IsEnabled = flag;
+            _saveButton.IsEnabled = flag;
+            _loadButton.IsEnabled = flag;
         }
 
         // event when canvas is pressed

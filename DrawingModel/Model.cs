@@ -110,16 +110,6 @@ namespace DrawingModel
             }
         }
 
-        // init google drive service
-        //private void SetUpGoogleDriveService()
-        //{
-        //    const string APPLICATION_NAME = "Drawing";
-        //    const string CLIENT_SECRET_FILE_NAME = "clientSecret.json";
-        //    string clientSecret = Path.Combine(Directory.GetCurrentDirectory(), CLIENT_SECRET_FILE_NAME);
-        //    if (_service == null)
-        //        _service = new GoogleDriveService(APPLICATION_NAME, clientSecret);
-        //}
-
         // set current drawing shape and hint shape
         public void SetDrawingShape(ShapeType shapeType)
         {
@@ -323,6 +313,7 @@ namespace DrawingModel
             _fileHandler.DownloadShapesFile();
             _fileHandler.LoadShapesFromLocal();
             _commandManager.Clear();
+            _selectedShapeIndex = -1;
             NotifyModelChanged();
         }
 
