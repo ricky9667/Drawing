@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DrawingModel
 {
@@ -11,8 +10,9 @@ namespace DrawingModel
         public event ModelChangedEventHandler _modelChanged;
         public delegate void ModelChangedEventHandler();
 
-        private const string FILENAME = "Shapes.txt";
-        private readonly string _filePath = Path.Combine(Directory.GetCurrentDirectory(), FILENAME);
+        private const char SPACE = ' ';
+        private const string FILE_NAME = "Shapes.txt";
+        private readonly string _filePath = Path.Combine(Directory.GetCurrentDirectory(), FILE_NAME);
         private double _firstPointX;
         private double _firstPointY;
         private int _firstClickedShapeIndex;
@@ -110,11 +110,11 @@ namespace DrawingModel
         }
 
         // init google drive service
-        private void InitGoogleDriveService()
+        private void SetUpGoogleDriveService()
         {
             const string APPLICATION_NAME = "Drawing";
-            string clientSecret = Path.Combine(Directory.GetCurrentDirectory(), "clientSecret.json");
-        
+            const string CLIENT_SECRET_FILE_NAME = "clientSecret.json";
+            string clientSecret = Path.Combine(Directory.GetCurrentDirectory(), CLIENT_SECRET_FILE_NAME);
             if (_service == null)
                 _service = new GoogleDriveService(APPLICATION_NAME, clientSecret);
         }
@@ -187,21 +187,21 @@ namespace DrawingModel
         // set hint first point coordinates
         public void SetHintFirstPointCoordinates(double posX, double posY)
         {
-            if (_hint == null)
-                return;
-
-            _hint.X1 = posX;
-            _hint.Y1 = posY;
+            if (_hint != null)
+            {
+                _hint.X1 = posX;
+                _hint.Y1 = posY;
+            }
         }
 
         // set hint second point coordinates
         public void SetHintSecondPointCoordinates(double posX, double posY)
         {
-            if (_hint == null)
-                return;
-
-            _hint.X2 = posX;
-            _hint.Y2 = posY;
+            if (_hint != null)
+            {
+                _hint.X2 = posX;
+                _hint.Y2 = posY;
+            }
         }
 
         // get shape index if coordinates is in a particular shape
@@ -313,17 +313,14 @@ namespace DrawingModel
         public void Draw(IGraphics graphics)
         {
             graphics.ClearAll();
-
             List<IShape> shapes = new List<IShape>();
             shapes.AddRange(_shapes.Where(shape => shape.ShapeType == ShapeType.LINE).ToList());
             shapes.AddRange(_shapes.Where(shape => shape.ShapeType != ShapeType.LINE).ToList());
 
             foreach (IShape shape in shapes)
                 shape.Draw(graphics);
-
             if (_isPressed && _hint != null)
                 _hint.Draw(graphics);
-
             if (_selectedShapeIndex != -1)
                 _shapes[_selectedShapeIndex].DrawSelection(graphics);
         }
@@ -331,27 +328,19 @@ namespace DrawingModel
         // save shapes image and data
         public void SaveShapes()
         {
-            //if (!Directory.Exists(_filePath))
-            //    return;
-
-            //Directory.Delete(_filePath);
             using (StreamWriter outputFile = new StreamWriter(_filePath))
             {
                 foreach (IShape shape in _shapes)
                 {
-                    string shapeData;
                     if (shape.ShapeType == ShapeType.LINE)
                     {
                         Line line = shape as Line;
-                        int firstIndex = _shapes.IndexOf(line.FirstShape);
-                        int secondIndex = _shapes.IndexOf(line.SecondShape);
-                        shapeData = string.Format("{0} {1} {2}", line.ShapeType.ToString(), firstIndex, secondIndex);
+                        outputFile.WriteLine(line.ShapeType.ToString() + SPACE + _shapes.IndexOf(line.FirstShape) + SPACE + _shapes.IndexOf(line.SecondShape));
                     }
                     else
                     {
-                        shapeData = string.Format("{0} {1} {2} {3} {4}", shape.ShapeType.ToString(), shape.X1, shape.Y1, shape.X2, shape.Y2);
+                        outputFile.WriteLine(shape.ShapeType.ToString() + SPACE + shape.X1 + SPACE + shape.Y1 + SPACE + shape.X2 + SPACE + shape.Y2);
                     }
-                    outputFile.WriteLine(shapeData);
                 }
             }
 
@@ -361,9 +350,9 @@ namespace DrawingModel
         // upload shapes data to google drive
         private void UploadLocalFile()
         {
-            InitGoogleDriveService();
+            SetUpGoogleDriveService();
             List<Google.Apis.Drive.v2.Data.File> files = _service.ListRootFileAndFolder();
-            int fileIndex = files.FindIndex(item => item.Title == FILENAME);
+            int fileIndex = files.FindIndex(item => item.Title == FILE_NAME);
             if (fileIndex > -1)
                 _service.DeleteFile(files[fileIndex].Id);
             const string CONTENT_TYPE = "text/txt";
@@ -380,7 +369,7 @@ namespace DrawingModel
             string[] rows = File.ReadAllLines(_filePath);
             foreach (string row in rows)
             {
-                string[] data = row.Split(' ');
+                string[] data = row.Split(SPACE);
                 Console.WriteLine(row);
                 IShape shape = ShapeFactory.CreateEmptyShape(data[0]);
                 if (shape.ShapeType == ShapeType.LINE)
@@ -400,9 +389,9 @@ namespace DrawingModel
         // load shapes from google drive
         public void DownloadLocalFile()
         {
-            InitGoogleDriveService();
+            SetUpGoogleDriveService();
             List<Google.Apis.Drive.v2.Data.File> files = _service.ListRootFileAndFolder();
-            int fileIndex = files.FindIndex(item => item.Title == FILENAME);
+            int fileIndex = files.FindIndex(item => item.Title == FILE_NAME);
             if (fileIndex == -1)
                 return;
             _service.DownloadFile(files[fileIndex], Directory.GetCurrentDirectory());

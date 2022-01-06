@@ -96,7 +96,6 @@ namespace DrawingModel
             UpdateSavedPosition();
         }
 
-
         // update coordinates to saved position
         public void UpdateSavedPosition()
         {

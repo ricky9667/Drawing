@@ -27,11 +27,7 @@ namespace DrawingModel
         private string _clientSecretFileName;
         private UserCredential _credential;
 
-        /// <summary>
-        /// 創造一個Google Drive Service
-        /// </summary>
-        /// <param name="applicationName">應用程式名稱</param>
-        /// <param name="clientSecretFileName">ClientSecret檔案名稱</param>
+        // init service
         public GoogleDriveService(string applicationName, string clientSecretFileName)
         {
             _applicationName = applicationName;
@@ -39,6 +35,7 @@ namespace DrawingModel
             this.CreateNewService(applicationName, clientSecretFileName);
         }
 
+        // create new service
         private void CreateNewService(string applicationName, string clientSecretFileName)
         {
             const string USER = "user";
@@ -59,7 +56,6 @@ namespace DrawingModel
             });
 
             _credential = credential;
-            DateTime now = DateTime.Now;
             _timeStamp = UNIXNowTimeStamp;
             _service = service;
         }
@@ -84,10 +80,7 @@ namespace DrawingModel
                 this.CreateNewService(_applicationName, _clientSecretFileName);
         }
 
-        /// <summary>
-        /// 查詢Google Drive 根目錄的檔案
-        /// </summary>
-        /// <returns>Google Drive File List</returns>
+        // list google drive files and folders
         public List<Google.Apis.Drive.v2.Data.File> ListRootFileAndFolder()
         {
             List<Google.Apis.Drive.v2.Data.File> returnList = new List<Google.Apis.Drive.v2.Data.File>();
@@ -105,11 +98,7 @@ namespace DrawingModel
             return returnList;
         }
 
-        /// <summary>
-        /// 使用QueryString 查詢檔案 回傳一List
-        /// </summary>
-        /// <param name="queryString">QueryString，使用方法: https://developers.google.com/drive/web/search-parameters </param>
-        /// <returns>含有Google Drive File 格式的 List</returns>
+        // get root files
         private List<Google.Apis.Drive.v2.Data.File> ListFileAndFolderWithQueryString(string queryString)
         {
             List<Google.Apis.Drive.v2.Data.File> returnList = new List<Google.Apis.Drive.v2.Data.File>();
@@ -134,14 +123,7 @@ namespace DrawingModel
             return returnList;
         }
 
-        /// <summary>
-        /// 上傳檔案
-        /// </summary>
-        /// <param name="uploadFileName">上傳的檔案名稱 </param>
-        /// <param name="contentType">上傳的檔案種類，請參考MIME Type : http://www.iana.org/assignments/media-types/media-types.xhtml </param>
-        /// <param name="uploadProgressEventHandeler"> 上傳進度改變時呼叫的函式</param>
-        /// <param name="responseReceivedEventHandler">收到回應時呼叫的函式 </param>
-        /// <returns>上傳成功，回傳上傳成功的 Google Drive 格式之File</returns>
+        // upload
         public Google.Apis.Drive.v2.Data.File UploadFile(string uploadFileName, string contentType, Action<IUploadProgress> uploadProgressEventHandeler = null, Action<Google.Apis.Drive.v2.Data.File> responseReceivedEventHandler = null)
         {
             FileStream uploadStream = new FileStream(uploadFileName, FileMode.Open, FileAccess.Read);
@@ -181,12 +163,7 @@ namespace DrawingModel
             return insertRequest.ResponseBody;
         }
 
-        /// <summary>
-        /// 下載檔案
-        /// </summary>
-        /// <param name="fileToDownload">欲下載的檔案(Google Drive File) 一般會從List取得</param>
-        /// <param name="downloadPath">下載到路徑</param>
-        /// <param name="downloadProgressChangedEventHandeler">當下載進度改變時，呼叫這個函式</param>
+        // download
         public void DownloadFile(Google.Apis.Drive.v2.Data.File fileToDownload, string downloadPath, Action<IDownloadProgress> downloadProgressChangedEventHandeler = null)
         {
             const string SPLASH = @"\";
@@ -208,10 +185,7 @@ namespace DrawingModel
             }
         }
 
-        /// <summary>
-        /// 刪除符合FileID的檔案
-        /// </summary>
-        /// <param name="fileId">欲刪除檔案的FileID</param>
+        // delete
         public void DeleteFile(string fileId)
         {
             CheckCredentialTimeStamp();
@@ -225,13 +199,7 @@ namespace DrawingModel
             }
         }
 
-        /// <summary>
-        /// 更新指定FileID的檔案
-        /// </summary>
-        /// <param name="fileName">欲上傳至Google Drive並覆蓋在Google Drive上舊版檔案的檔案位置 </param>
-        /// <param name="fileId">存在於Google Drive 舊版檔案的FileID </param>
-        /// <param name="contentType">MIME Type</param>
-        /// <returns>如更新成功，回傳更新後的Google Drive File</returns>
+        // update
         public Google.Apis.Drive.v2.Data.File UpdateFile(string fileName, string fileId, string contentType)
         {
             CheckCredentialTimeStamp();

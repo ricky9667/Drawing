@@ -34,11 +34,11 @@ namespace DrawingModel
         {
             switch (shapeName)
             {
-                case "LINE":
+                case nameof(ShapeType.LINE):
                     return new Line();
-                case "RECTANGLE":
+                case nameof(ShapeType.RECTANGLE):
                     return new Rectangle();
-                case "ELLIPSE":
+                case nameof(ShapeType.ELLIPSE):
                     return new Ellipse();
                 default:
                     const string MESSAGE = "ShapeType is null or does not exist.";
