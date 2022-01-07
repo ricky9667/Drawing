@@ -82,8 +82,22 @@ namespace DrawingModel
             graphics.DrawSelection(X1, Y1, X2, Y2);
         }
 
-        // change line coordinate from shapes
-        public void LocatePositionByShapes()
+        // set shape coordinates
+        public void SetShapeCoordinates(double x1, double y1, double x2, double y2)
+        {
+
+        }
+
+        // set line reference shapes
+        public void SetReferenceShapes(IShape firstShape, IShape secondShape)
+        {
+            FirstShape = firstShape;
+            SecondShape = secondShape;
+            UpdateSavedPosition();
+        }
+
+        // update coordinates to saved position
+        public void UpdateSavedPosition()
         {
             X1 = FirstShape.CenterX;
             Y1 = FirstShape.CenterY;
@@ -91,10 +105,18 @@ namespace DrawingModel
             Y2 = SecondShape.CenterY;
         }
 
+        // move shape
+        public void MoveShapeByOffset(double offsetX, double offsetY)
+        {
+            
+        }
+
         // check position in shape
         public bool IsPositionInShape(double posX, double posY)
         {
-            return X1 <= posX && posX <= X2 && Y1 <= posY && posY <= Y2;
+            bool xInRange = (X1 < X2) ? (X1 <= posX && posX <= X2) : (X2 <= posX && posX <= X1);
+            bool yInRange = (Y1 < Y2) ? (Y1 <= posY && posY <= Y2) : (Y2 <= posY && posY <= Y1);
+            return xInRange && yInRange;
         }
     }
 }

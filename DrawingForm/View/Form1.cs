@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using DrawingModel;
 
@@ -41,6 +42,8 @@ namespace DrawingForm
             _rectangleButton.Click += HandleRectangleButtonClick;
             _ellipseButton.Click += HandleEllipseButtonClick;
             _clearButton.Click += HandleClearButtonClick;
+            _saveButton.Click += HandleSaveButtonClick;
+            _loadButton.Click += HandleLoadButtonClick;
         }
 
         // undo last command
@@ -91,6 +94,38 @@ namespace DrawingForm
             _lineButton.Enabled = true;
             _rectangleButton.Enabled = true;
             _ellipseButton.Enabled = true;
+        }
+
+        // save shapes
+        private async void HandleSaveButtonClick(object sender, EventArgs e)
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                _model.SaveShapes();
+            });
+        }
+
+        // load shapes
+        private void HandleLoadButtonClick(object sender, EventArgs e)
+        {
+            SetScreenEnabled(false);
+            _undoToolStripButton.Enabled = false;
+            _redoToolStripButton.Enabled = false;
+            _model.LoadShapes();
+            HandleModelChanged();
+            SetScreenEnabled(true);
+        }
+
+        // set components enabled
+        private void SetScreenEnabled(bool flag)
+        {
+            _canvas.Enabled = flag;
+            _lineButton.Enabled = flag;
+            _rectangleButton.Enabled = flag;
+            _ellipseButton.Enabled = flag;
+            _clearButton.Enabled = flag;
+            _saveButton.Enabled = flag;
+            _loadButton.Enabled = flag;
         }
 
         // event when canvas is pressed

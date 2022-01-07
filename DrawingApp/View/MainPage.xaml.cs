@@ -4,6 +4,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using DrawingModel;
 using Windows.UI.ViewManagement;
+using System.Threading.Tasks;
+using Windows.UI.Popups;
+using System;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -48,6 +51,8 @@ namespace DrawingApp
             _lineButton.Click += HandleLineButtonClick;
             _rectangleButton.Click += HandleRectangleButtonClick;
             _ellipseButton.Click += HandleEllipseButtonClick;
+            _saveButton.Click += HandleSaveButtonClick;
+            _loadButton.Click += HandleLoadButtonClick;
         }
 
         // undo last command
@@ -98,6 +103,38 @@ namespace DrawingApp
             _lineButton.IsEnabled = true;
             _rectangleButton.IsEnabled = true;
             _ellipseButton.IsEnabled = false;
+        }
+
+        // save shapes
+        private async void HandleSaveButtonClick(object sender, RoutedEventArgs e)
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                _model.SaveShapes();
+            });
+        }
+
+        // load shapes
+        private void HandleLoadButtonClick(object sender, RoutedEventArgs e)
+        {
+            SetScreenEnabled(false);
+            _undoButton.IsEnabled = false;
+            _redoButton.IsEnabled = false;
+            _model.LoadShapes();
+            HandleModelChanged();
+            SetScreenEnabled(true);
+        }
+
+        // set components enabled
+        private void SetScreenEnabled(bool flag)
+        {
+            _canvas.IsTapEnabled = _canvas.IsHoldingEnabled = flag;
+            _lineButton.IsEnabled = flag;
+            _rectangleButton.IsEnabled = flag;
+            _ellipseButton.IsEnabled = flag;
+            _clearButton.IsEnabled = flag;
+            _saveButton.IsEnabled = flag;
+            _loadButton.IsEnabled = flag;
         }
 
         // event when canvas is pressed
