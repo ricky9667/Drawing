@@ -155,6 +155,7 @@ namespace DrawingModel.Tests
             Assert.AreEqual(-1, model.SelectedShapeIndex);
         }
 
+        // test
         [TestMethod()]
         public void MoveShapeTest()
         {
